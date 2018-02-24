@@ -3,7 +3,7 @@ categories:
   - 语言
 tags:
   - Java
-date: 2016-06-16 08:09:00
+date: 2013-06-16 08:09:00
 ---
 # Introduction
 
@@ -12,13 +12,13 @@ date: 2016-06-16 08:09:00
 - 总体介绍
 - 核心方法剖析
 
-<!-- more -->
-
 # 总体介绍
 
 *ArrayList*实现了*List*接口，是顺序容器，即元素存放的数据与放进去的顺序相同，允许放入`null`元素，底层通过**数组实现**。除该类未实现同步外，其余跟*Vector*大致相同。每个*ArrayList*都有一个容量（capacity），表示底层数组的实际大小，容器内存储元素的个数不能多于当前容量。当向容器中添加元素时，如果容量不足，容器会自动增大底层数组的大小。前面已经提过，Java泛型只是编译器提供的语法糖，所以这里的数组是一个Object数组，以便能够容纳任何类型的对象。
 
-![ArrayList_base](/images/ArrayList_base.png)
+<!-- more -->
+
+![ArrayList_base](/images/arraylist/ArrayList_base.png)
 
 size(), isEmpty(), get(), set()方法均能在常数时间内完成，add()方法的时间开销跟插入位置有关，addAll()方法的时间开销跟添加元素的个数成正比。其余方法大都是线性时间。
 
@@ -64,11 +64,11 @@ private void grow(int minCapacity) {
 ```
 由于Java GC自动管理了内存，这里也就不需要考虑源数组释放的问题。
 
-![ArrayList_grow](/images/ArrayList_grow.png)
+![ArrayList_grow](/images/arraylist/ArrayList_grow.png)
 
 空间的问题解决后，插入过程就显得非常简单。
 
-![ArrayList_add](/images/ArrayList_add.png)
+![ArrayList_add](/images/arraylist/ArrayList_add.png)
 
 `add(int index, E e)`需要先对元素进行移动，然后完成插入操作，也就意味着该方法有着线性的时间复杂度。
 
