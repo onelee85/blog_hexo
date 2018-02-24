@@ -84,22 +84,22 @@
 
 
 
-<meta name="description" content="HashSet介绍HashMap实现了Map接口，即允许放入key为null的元素，也允许插入value为null的元素；除该类未实现同步外，其余跟Hashtable大致相同；跟TreeMap不同，该容器不保证元素顺序，根据需要该容器可能会对元素重新哈希，元素的顺序也会被重新打散，因此不同时间迭代同一个HashMap的顺序可能会不同。根据对冲突的处理方式不同，哈希表有两种实现方式，一种开放地址方式">
+<meta name="description" content="介绍HashMap实现了Map接口，即允许放入key为null的元素，也允许插入value为null的元素；除该类未实现同步外，其余跟Hashtable大致相同；跟TreeMap不同，该容器不保证元素顺序，根据需要该容器可能会对元素重新哈希，元素的顺序也会被重新打散，因此不同时间迭代同一个HashMap的顺序可能会不同。根据对冲突的处理方式不同，哈希表有两种实现方式，一种开放地址方式（Open a">
 <meta name="keywords" content="Java">
 <meta property="og:type" content="article">
 <meta property="og:title" content="HashMap源码学习">
 <meta property="og:url" content="https://onelee85.github.io/language/HashMap/index.html">
 <meta property="og:site_name" content="James&#39;s 烂笔头">
-<meta property="og:description" content="HashSet介绍HashMap实现了Map接口，即允许放入key为null的元素，也允许插入value为null的元素；除该类未实现同步外，其余跟Hashtable大致相同；跟TreeMap不同，该容器不保证元素顺序，根据需要该容器可能会对元素重新哈希，元素的顺序也会被重新打散，因此不同时间迭代同一个HashMap的顺序可能会不同。根据对冲突的处理方式不同，哈希表有两种实现方式，一种开放地址方式">
+<meta property="og:description" content="介绍HashMap实现了Map接口，即允许放入key为null的元素，也允许插入value为null的元素；除该类未实现同步外，其余跟Hashtable大致相同；跟TreeMap不同，该容器不保证元素顺序，根据需要该容器可能会对元素重新哈希，元素的顺序也会被重新打散，因此不同时间迭代同一个HashMap的顺序可能会不同。根据对冲突的处理方式不同，哈希表有两种实现方式，一种开放地址方式（Open a">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://onelee85.github.io/images/hashmap/HashMap_base.png">
 <meta property="og:image" content="https://onelee85.github.io/images/hashmap/HashMap_getEntry.png">
 <meta property="og:image" content="https://onelee85.github.io/images/hashmap/HashMap_addEntry.png">
 <meta property="og:image" content="https://onelee85.github.io/images/hashmap/HashMap_removeEntryForKey.png">
-<meta property="og:updated_time" content="2018-02-24T08:16:46.575Z">
+<meta property="og:updated_time" content="2018-02-24T08:18:23.594Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HashMap源码学习">
-<meta name="twitter:description" content="HashSet介绍HashMap实现了Map接口，即允许放入key为null的元素，也允许插入value为null的元素；除该类未实现同步外，其余跟Hashtable大致相同；跟TreeMap不同，该容器不保证元素顺序，根据需要该容器可能会对元素重新哈希，元素的顺序也会被重新打散，因此不同时间迭代同一个HashMap的顺序可能会不同。根据对冲突的处理方式不同，哈希表有两种实现方式，一种开放地址方式">
+<meta name="twitter:description" content="介绍HashMap实现了Map接口，即允许放入key为null的元素，也允许插入value为null的元素；除该类未实现同步外，其余跟Hashtable大致相同；跟TreeMap不同，该容器不保证元素顺序，根据需要该容器可能会对元素重新哈希，元素的顺序也会被重新打散，因此不同时间迭代同一个HashMap的顺序可能会不同。根据对冲突的处理方式不同，哈希表有两种实现方式，一种开放地址方式（Open a">
 <meta name="twitter:image" content="https://onelee85.github.io/images/hashmap/HashMap_base.png">
 
 
@@ -317,7 +317,7 @@
       
 
       
-        <h1 id="HashSet"><a href="#HashSet" class="headerlink" title="HashSet"></a>HashSet</h1><h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p><em>HashMap</em>实现了<em>Map</em>接口，即允许放入<code>key</code>为<code>null</code>的元素，也允许插入<code>value</code>为<code>null</code>的元素；除该类未实现同步外，其余跟<code>Hashtable</code>大致相同；跟<em>TreeMap</em>不同，该容器不保证元素顺序，根据需要该容器可能会对元素重新哈希，元素的顺序也会被重新打散，因此不同时间迭代同一个<em>HashMap</em>的顺序可能会不同。<br>根据对冲突的处理方式不同，哈希表有两种实现方式，一种开放地址方式（Open addressing），另一种是冲突链表方式（Separate chaining with linked lists）。<strong>Java <em>HashMap</em>采用的是冲突链表方式</strong>。<br><a id="more"></a><br><img src="/images/hashmap/HashMap_base.png" alt="HashMap_base"></p>
+        <h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p><em>HashMap</em>实现了<em>Map</em>接口，即允许放入<code>key</code>为<code>null</code>的元素，也允许插入<code>value</code>为<code>null</code>的元素；除该类未实现同步外，其余跟<code>Hashtable</code>大致相同；跟<em>TreeMap</em>不同，该容器不保证元素顺序，根据需要该容器可能会对元素重新哈希，元素的顺序也会被重新打散，因此不同时间迭代同一个<em>HashMap</em>的顺序可能会不同。<br>根据对冲突的处理方式不同，哈希表有两种实现方式，一种开放地址方式（Open addressing），另一种是冲突链表方式（Separate chaining with linked lists）。<strong>Java <em>HashMap</em>采用的是冲突链表方式</strong>。<br><a id="more"></a><br><img src="/images/hashmap/HashMap_base.png" alt="HashMap_base"></p>
 <p>从上图容易看出，如果选择合适的哈希函数，<code>put()</code>和<code>get()</code>方法可以在常数时间内完成。但在对<em>HashMap</em>进行迭代时，需要遍历整个table以及后面跟的冲突链表。因此对于迭代比较频繁的场景，不宜将<em>HashMap</em>的初始大小设的过大。</p>
 <p>有两个参数可以影响<em>HashMap</em>的性能：初始容量（inital capacity）和负载系数（load factor）。初始容量指定了初始<code>table</code>的大小，负载系数用来指定自动扩容的临界值。当<code>entry</code>的数量超过<code>capacity*load_factor</code>时，容器将自动扩容并重新哈希。对于插入元素较多的场景，将初始容量设大可以减少重新哈希的次数。</p>
 <p>将对象放入到<em>HashMap</em>或<em>HashSet</em>中时，有两个方法需要特别关心：<code>hashCode()</code>和<code>equals()</code>。<strong><code>hashCode()</code>方法决定了对象会被放到哪个<code>bucket</code>里，当多个对象的哈希值冲突时，<code>equals()</code>方法决定了这些对象是否是“同一个对象”</strong>。所以，如果要将自定义的对象放入到<code>HashMap</code>或<code>HashSet</code>中，需要<em>@Override</em><code>hashCode()</code>和<code>equals()</code>方法。</p>
@@ -485,7 +485,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#HashSet"><span class="nav-number">1.</span> <span class="nav-text">HashSet</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#介绍"><span class="nav-number">2.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#方法剖析"><span class="nav-number">3.</span> <span class="nav-text">方法剖析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#get"><span class="nav-number">3.1.</span> <span class="nav-text">get()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#put"><span class="nav-number">3.2.</span> <span class="nav-text">put()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#remove"><span class="nav-number">3.3.</span> <span class="nav-text">remove()</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#介绍"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#方法剖析"><span class="nav-number">2.</span> <span class="nav-text">方法剖析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#get"><span class="nav-number">2.1.</span> <span class="nav-text">get()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#put"><span class="nav-number">2.2.</span> <span class="nav-text">put()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#remove"><span class="nav-number">2.3.</span> <span class="nav-text">remove()</span></a></li></ol></li></ol></div>
             
           </div>
         </section>
