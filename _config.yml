@@ -51,6 +51,7 @@ default_category: uncategorized
 category_map:
   区块链: blocklink
   语言: language
+  实战: product
   算法: algorithm
 tag_map:
 
