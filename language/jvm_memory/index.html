@@ -95,7 +95,7 @@
 <meta property="og:image" content="https://onelee85.github.io/images/jvm/jvm_struct2.jpg">
 <meta property="og:image" content="https://onelee85.github.io/images/jvm/jvm_heap.jpg">
 <meta property="og:image" content="https://onelee85.github.io/images/jvm/array.jpg">
-<meta property="og:updated_time" content="2018-02-28T08:01:18.289Z">
+<meta property="og:updated_time" content="2018-03-01T01:36:49.979Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JVM内存分析">
 <meta name="twitter:description" content="概要开发人员编写Java代码(.java文件)，然后将之编译成字节码(.class文件)。最后字节码被装入内存，一旦字节码进入虚拟机，它就会被解释器解释执行，或者是被即时代码发生器有选择的转换成机器码执行。在Java平台的结构中, 可以看出，Java虚拟机(JVM) 处在核心的位置，是程序与底层操作系统和硬件无关的关键。它的下方是移植接口，移植接口由两部分组成：适配器和Java操作系统, 其中依赖">
@@ -381,7 +381,7 @@
 <li>-XX:MaxPermSize分配过小会导致：java.lang.OutOfMemoryError: PermGen space</li>
 </ul>
 <h1 id="内存监控方法"><a href="#内存监控方法" class="headerlink" title="内存监控方法"></a>内存监控方法</h1><p>jmap -heap 查看java 堆（heap）使用情况</p>
-<p> 参数配置：内存溢出自动dump内存快照</p>
+<p>参数配置：内存溢出自动dump内存快照</p>
 <p>-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/home/logs</p>
 <p>jmap -dump:format=b,file=heap.bin <pid>  </pid></p>
 <p>format=b的含义是，dump出来的文件时二进制格式。</p>
