@@ -98,7 +98,7 @@ Java堆可以处于物理上不连续的内存空间，只要逻辑上连续的�
 
 jmap -heap 查看java 堆（heap）使用情况
 
- 参数配置：内存溢出自动dump内存快照
+参数配置：内存溢出自动dump内存快照
 
 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/home/logs
 
