@@ -96,7 +96,7 @@
 <meta property="og:image" content="https://onelee85.github.io/images/synchronized/syn_class.png">
 <meta property="og:image" content="https://onelee85.github.io/images/synchronized/object.png">
 <meta property="og:image" content="https://onelee85.github.io/images/synchronized/lockstatus.png">
-<meta property="og:updated_time" content="2018-03-08T01:43:05.492Z">
+<meta property="og:updated_time" content="2018-03-15T06:41:11.291Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="synchronized的故事">
 <meta name="twitter:description" content="前言并发编程几乎是每个程序员都必须要掌握的技能，但是也是比较难理解和熟练掌握，使用过程中也很容易出现问题；本文将从java Synchronized的关键字入手，着重讲解其应用方式和实现原理。">
@@ -406,7 +406,6 @@
 </tbody>
 </table>
 <h3 id="锁消除"><a href="#锁消除" class="headerlink" title="锁消除"></a>锁消除</h3><p>消除锁是虚拟机另外一种锁的优化，这种优化更彻底，Java虚拟机在JIT编译时(可以简单理解为当某段代码即将第一次被执行时进行编译，又称即时编译)，通过对运行上下文的扫描，去除不可能存在共享资源竞争的锁，通过这种方式消除没有必要的锁，可以节省毫无意义的请求锁时间，如下StringBuffer的append是一个同步方法，但是在add方法中的StringBuffer属于一个局部变量，并且不会被其他线程所使用，因此StringBuffer不可能存在共享资源竞争的情景，JVM会自动将其锁消除。</p>
-<p><a href="https://segmentfault.com/a/1190000009912198" target="_blank" rel="noopener">https://segmentfault.com/a/1190000009912198</a></p>
 
       
     </div>
@@ -517,7 +516,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">7</span>
+              <span class="site-state-item-count">8</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -534,7 +533,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-count">8</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
