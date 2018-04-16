@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="区块链," />
+  <meta name="keywords" content="二分查找," />
 
 
 
@@ -84,21 +84,18 @@
 
 
 
-<meta name="description" content="什么是区块链区块链是一个分布式的，去中心化的，点对点的，不可篡改的，共享账本系统。">
-<meta name="keywords" content="区块链">
+<meta name="description" content="简介二分查找法： 在一个有序数组中，取数组中的中间值和要找的值进行比较，当要查找的值大于中间值，则在右边的区间继续取一个中间值和要比较的数进行比较。当找查找的值小于中间值时则反之，直至最后要查找的值和中间值相同，则说明找到该值。 一般而言，对于包含n个元素的有序列表，用二分查找最多需要㏒₂n步，而简单查找最多需要n步。 问题编写二分查找法的代码看似简单，其实是很容易出错的，你必须注意各种边界条件的">
+<meta name="keywords" content="二分查找">
 <meta property="og:type" content="article">
-<meta property="og:title" content="区块链解谜">
-<meta property="og:url" content="https://onelee85.github.io/blocklink/blockchain/index.html">
+<meta property="og:title" content="二分查找真的不简单">
+<meta property="og:url" content="https://onelee85.github.io/algorithm/binarysearch/index.html">
 <meta property="og:site_name" content="James&#39;s 烂笔头">
-<meta property="og:description" content="什么是区块链区块链是一个分布式的，去中心化的，点对点的，不可篡改的，共享账本系统。">
+<meta property="og:description" content="简介二分查找法： 在一个有序数组中，取数组中的中间值和要找的值进行比较，当要查找的值大于中间值，则在右边的区间继续取一个中间值和要比较的数进行比较。当找查找的值小于中间值时则反之，直至最后要查找的值和中间值相同，则说明找到该值。 一般而言，对于包含n个元素的有序列表，用二分查找最多需要㏒₂n步，而简单查找最多需要n步。 问题编写二分查找法的代码看似简单，其实是很容易出错的，你必须注意各种边界条件的">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://onelee85.github.io/images/blockchain/blockchain.png">
-<meta property="og:image" content="https://onelee85.github.io/images/blockchain/arch.png">
-<meta property="og:updated_time" content="2018-04-04T08:30:35.237Z">
+<meta property="og:updated_time" content="2018-04-10T01:52:36.031Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="区块链解谜">
-<meta name="twitter:description" content="什么是区块链区块链是一个分布式的，去中心化的，点对点的，不可篡改的，共享账本系统。">
-<meta name="twitter:image" content="https://onelee85.github.io/images/blockchain/blockchain.png">
+<meta name="twitter:title" content="二分查找真的不简单">
+<meta name="twitter:description" content="简介二分查找法： 在一个有序数组中，取数组中的中间值和要找的值进行比较，当要查找的值大于中间值，则在右边的区间继续取一个中间值和要比较的数进行比较。当找查找的值小于中间值时则反之，直至最后要查找的值和中间值相同，则说明找到该值。 一般而言，对于包含n个元素的有序列表，用二分查找最多需要㏒₂n步，而简单查找最多需要n步。 问题编写二分查找法的代码看似简单，其实是很容易出错的，你必须注意各种边界条件的">
 
 
 
@@ -116,7 +113,7 @@
   };
 </script>
 
-  <title> 区块链解谜 | James's 烂笔头 </title>
+  <title> 二分查找真的不简单 | James's 烂笔头 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -256,7 +253,7 @@
             
             
               
-                区块链解谜
+                二分查找真的不简单
               
             
           </h1>
@@ -268,8 +265,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2017-12-29T11:58:00+08:00" content="2017-12-29">
-              2017-12-29
+            <time itemprop="dateCreated" datetime="2015-04-09T15:19:00+08:00" content="2015-04-09">
+              2015-04-09
             </time>
           </span>
 
@@ -282,8 +279,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/blocklink/" itemprop="url" rel="index">
-                    <span itemprop="name">区块链</span>
+                  <a href="/categories/algorithm/" itemprop="url" rel="index">
+                    <span itemprop="name">算法</span>
                   </a>
                 </span>
 
@@ -315,28 +312,16 @@
       
 
       
-        <h1 id="什么是区块链"><a href="#什么是区块链" class="headerlink" title="什么是区块链"></a>什么是区块链</h1><p>区块链是一个分布式的，去中心化的，点对点的，不可篡改的，共享账本系统。</p>
-<a id="more"></a>
-<p><img src="/images/blockchain/blockchain.png" alt="jvm_struct2"></p>
-<h1 id="区块链架构"><a href="#区块链架构" class="headerlink" title="区块链架构"></a>区块链架构</h1><p>区块链整体架构上划分为网络层、共识层、数据层、智能合约层和应用层。共识层和数据层之间的联系比较密切，需要“通力合作”完成数据的存取。</p>
-<ul>
-<li>网络层，几乎都是基于P2P的网络，它主要完成节点之间的交互和数据块的传输。</li>
-<li>共识层，提供在不可信、分布式环境中的共识协议，通过它保证节点之间的数据一致性。</li>
-<li>数据层，提供数据保存的数据结构，它要承担防篡改的任务，所以技术上用了区块链表、Hash、Merkle Tree来实现。</li>
-<li>智能合约层，相当于数据访问接口，对区块链上的数据读写都是通过智能合约进行的，任何人的数据读写动作都是被明确定义的。</li>
-<li>应用层，各种各样的应用程序。</li>
+        <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>二分查找法： 在一个有序数组中，取数组中的中间值和要找的值进行比较，当要查找的值大于中间值，则在右边的区间继续取一个中间值和要比较的数进行比较。当找查找的值小于中间值时则反之，直至最后要查找的值和中间值相同，则说明找到该值。</p>
+<p>一般而言，对于包含n个元素的有序列表，用二分查找最多需要<code>㏒₂n</code>步，而简单查找最多需要n步。</p>
+<h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><p>编写二分查找法的代码看似简单，其实是很容易出错的，你必须注意各种边界条件的处理，例如数组是空的，或者数组只有一个元素等等。别说你会出错，很多正规出版的算法书在讲解二分查找法时，他们给出的代码也是有错误的，据统计在美国出版的二十多本不同的讲算法的书中，只有五本对二分查找的代码实现是正确的。</p>
+<h1 id="show-code"><a href="#show-code" class="headerlink" title="show code"></a>show code</h1><h2 id="递归二分查找"><a href="#递归二分查找" class="headerlink" title="递归二分查找"></a>递归二分查找</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//递归二分查找</span></span><br><span class="line"><span class="function">Integer <span class="title">binarySearch</span><span class="params">(Integer[] arrs, Integer val, Integer lo, Integer hi)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(lo &gt; hi) <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        Integer mid = (hi + lo) / <span class="number">2</span>;</span><br><span class="line">        <span class="keyword">if</span> (val &gt; arrs[mid]) <span class="keyword">return</span> binarySearch(arrs, val, mid + <span class="number">1</span>, hi);</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (val &lt; arrs[mid]) <span class="keyword">return</span> binarySearch(arrs, val, lo, mid - <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">return</span> mid;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="非递归"><a href="#非递归" class="headerlink" title="非递归"></a>非递归</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Integer <span class="title">binarySearchV1</span><span class="params">(Integer[] arrs, Integer val, Integer lo, Integer hi)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span>(hi &gt;= lo)&#123;</span><br><span class="line">            <span class="comment">//low + high 是会溢出的。只要这个数组我们开的足够大</span></span><br><span class="line">            <span class="comment">//Integer mid = (hi + lo) / 2;</span></span><br><span class="line">            Integer mid = ((hi - lo) &gt;&gt; <span class="number">2</span>) + lo;</span><br><span class="line">            <span class="keyword">if</span> (val &gt; arrs[mid]) lo = mid + <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (val &lt; arrs[mid]) hi = mid - <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">return</span> mid;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="易错点"><a href="#易错点" class="headerlink" title="易错点"></a>易错点</h1><ul>
+<li><em>死循环</em>: 在做的是整数运算，整除2了之后，对于奇数和偶数的行为还不一样，很有可能有些情况下我们并没有减小取值范围，而形成死循环</li>
+<li>退出条件。到底什么时候我们才觉得我们找不到呢</li>
+<li>差1错误。我们的左端点应该是当前可能区间的最小范围，那么右端点是最大范围呢，还是最大范围+1呢。我们取了中间值之后，在缩小区间时，有没有保持左右端点的这个假设的一致性呢？</li>
 </ul>
-<p><img src="/images/blockchain/arch.png" alt="jvm_struct2"></p>
-<h1 id="区块链和比特币的关系"><a href="#区块链和比特币的关系" class="headerlink" title="区块链和比特币的关系"></a>区块链和比特币的关系</h1><p>每个区块数据由谁来记录或者说打包，是可以设置一个游戏规则的，比如说掷骰子，大家约定谁能连续3次掷出6，那就让他来记这个数据，为了补偿 一下他的劳动投入，奖励给他一些收益，<br>比特币正是使用了这样的原理来不断的发行新的比特币出来，奖励给打包的那个人的比特币就是新发行的比特币。</p>
-<h1 id="挖矿和区块链"><a href="#挖矿和区块链" class="headerlink" title="挖矿和区块链"></a>挖矿和区块链</h1><p>作为一个“数据库应用”比特币必须要“做点什么”。于是它就设计了一个小游戏环节——挖矿。游戏设计师中本聪在他大作《比特币：一种点对点式的电子现金系统》详细讲述的设计内幕和游戏方法。</p>
-<h1 id="区块链的技术组合"><a href="#区块链的技术组合" class="headerlink" title="区块链的技术组合"></a>区块链的技术组合</h1><h2 id="公开密钥算法"><a href="#公开密钥算法" class="headerlink" title="公开密钥算法"></a>公开密钥算法</h2><p>属于计算机密码学里传统的技术，公开密钥算法是一种不对称的加密算法，拥有两个密钥，可以互相加解密，通常其中的一个密钥是公开的称之为公钥，另外一个密钥是保密的称之为私钥</p>
-<h2 id="哈希算法"><a href="#哈希算法" class="headerlink" title="哈希算法"></a>哈希算法</h2><p>也是属于计算机密码学中传统的技术，应用就更广泛了，主要用来对一段数据进行计算，得出一个摘要信息，通俗点说就是给一段数据生成1个身份证号；不同的消息生成的摘要数据是不一样的（某些抗碰撞能力弱的哈希算法可能在这里面会有些问题，但是使用广泛的一些知名的哈希算法，发生碰撞的概率很低），相当于给⼀段数据生成了一个身份证号这么个意思，在区块链系统中，哈希算法的使用很多，例如如区块与区块之间，就是通过区块头的哈希关联起来的，在区块中的每一笔交易事务也都会生成一个哈希值作为交易易数据的ID，通过这些身份证号可以方便的检索或者关联区块，也能方便的指定某一笔交易事务。 </p>
-<h2 id="网络共识算法"><a href="#网络共识算法" class="headerlink" title="网络共识算法"></a>网络共识算法</h2><p>在很久前就有计算机科学家研究过，并且提出过一些模型，如拜占庭容错算法之类，比特币、以太坊这些使用的是一种工作量证明算法，其它的一些区块链系统有使用其他各种衍生的算法，算法的原理都很简单，就是约一个规则，通过共同执行这个规则，让每个分布式的节点数据都保持最终一致；</p>
-<h2 id="梅克尔数据证明"><a href="#梅克尔数据证明" class="headerlink" title="梅克尔数据证明"></a>梅克尔数据证明</h2><p>这是利用哈希算法将一组数据创建为一棵哈希树结构，用于验证数据完整性的一种结构，同时也应用在了轻量级钱包中。不同的区块链系统对梅克尔树的应用不尽相同，比特币中是二叉梅克尔树，比较简单，通过交易事务的哈希值两两配合生成一棵树，以太坊这种就复杂的多了，称之为梅克尔.帕特里夏树，这里暂时不赘述。</p>
-<h2 id="可编程脚本合约"><a href="#可编程脚本合约" class="headerlink" title="可编程脚本合约"></a>可编程脚本合约</h2><p>什么叫合约？就是一组约定的规则，例如银行的结算系统，小明转账100给小王，在这个过程中，银系统就会根据一组规则自动执行，规则包含如检测小明的密码是否正确，余额是否足够，小王的账号是否正确，检测通过则分别更改两者的账户余额并写入事务日志。是的，这就是合约的意思了，当然，如果范围再广泛些，各种商业合约也都是这么个意思，因此可编程脚本合约也没什么好稀奇的，如果将这种编程合约放到区块链的环境中，比较有趣了，看两个特点：</p>
-<p>第一个，区块链系统是无中新的分布式网络，没有边界</p>
-<p>第二个，区块链系统通过一系列的技术实现了可信任网络</p>
-<p>加起来，就是无边界的可信任网络，在这样的网络中执行既定的合约，成本低而且安全，比特币在本质上也是属于这种脚本合约，只不过在比特币软件中，合约中处理的事情是比特币的转账</p>
 
       
     </div>
@@ -358,7 +343,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/区块链/" rel="tag">#区块链</a>
+            <a href="/tags/二分查找/" rel="tag">#二分查找</a>
           
         </div>
       
@@ -367,13 +352,17 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/product/Docker/" rel="next" title="Docker学习">
-                <i class="fa fa-chevron-left"></i> Docker学习
+              <a href="/product/threadpool/" rel="next" title="线程池探究">
+                <i class="fa fa-chevron-left"></i> 线程池探究
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/product/Docker/" rel="prev" title="Docker学习">
+                Docker学习 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -498,7 +487,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#什么是区块链"><span class="nav-number">1.</span> <span class="nav-text">什么是区块链</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#区块链架构"><span class="nav-number">2.</span> <span class="nav-text">区块链架构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#区块链和比特币的关系"><span class="nav-number">3.</span> <span class="nav-text">区块链和比特币的关系</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#挖矿和区块链"><span class="nav-number">4.</span> <span class="nav-text">挖矿和区块链</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#区块链的技术组合"><span class="nav-number">5.</span> <span class="nav-text">区块链的技术组合</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#公开密钥算法"><span class="nav-number">5.1.</span> <span class="nav-text">公开密钥算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#哈希算法"><span class="nav-number">5.2.</span> <span class="nav-text">哈希算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网络共识算法"><span class="nav-number">5.3.</span> <span class="nav-text">网络共识算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#梅克尔数据证明"><span class="nav-number">5.4.</span> <span class="nav-text">梅克尔数据证明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可编程脚本合约"><span class="nav-number">5.5.</span> <span class="nav-text">可编程脚本合约</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题"><span class="nav-number">2.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#show-code"><span class="nav-number">3.</span> <span class="nav-text">show code</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#递归二分查找"><span class="nav-number">3.1.</span> <span class="nav-text">递归二分查找</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#非递归"><span class="nav-number">3.2.</span> <span class="nav-text">非递归</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#易错点"><span class="nav-number">4.</span> <span class="nav-text">易错点</span></a></li></ol></div>
             
           </div>
         </section>
