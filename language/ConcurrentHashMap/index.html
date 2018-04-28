@@ -1,0 +1,659 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.lug.ustc.edu.cn/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="ConcurrentHashMap," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="简介ConcurrentHashMap 是 util.concurrent 包的重要成员。本文将结合 Java 内存模型，分析 JDK 源代码，探索 ConcurrentHashMap 高并发的具体实现机制。">
+<meta name="keywords" content="ConcurrentHashMap">
+<meta property="og:type" content="article">
+<meta property="og:title" content="探索 ConcurrentHashMap">
+<meta property="og:url" content="https://onelee85.github.io/language/ConcurrentHashMap/index.html">
+<meta property="og:site_name" content="James&#39;s 烂笔头">
+<meta property="og:description" content="简介ConcurrentHashMap 是 util.concurrent 包的重要成员。本文将结合 Java 内存模型，分析 JDK 源代码，探索 ConcurrentHashMap 高并发的具体实现机制。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://onelee85.github.io/images/concurrentHashMap/image005.jpg">
+<meta property="og:image" content="https://onelee85.github.io/images/concurrentHashMap/image004.jpg">
+<meta property="og:updated_time" content="2018-04-20T10:18:31.417Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="探索 ConcurrentHashMap">
+<meta name="twitter:description" content="简介ConcurrentHashMap 是 util.concurrent 包的重要成员。本文将结合 Java 内存模型，分析 JDK 源代码，探索 ConcurrentHashMap 高并发的具体实现机制。">
+<meta name="twitter:image" content="https://onelee85.github.io/images/concurrentHashMap/image005.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 3109763,
+      author: 'Charles0429'
+    }
+  };
+</script>
+
+  <title> 探索 ConcurrentHashMap | James's 烂笔头 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">James's 烂笔头</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">好记心不如烂笔头</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                探索 ConcurrentHashMap
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2013-08-20T17:06:00+08:00" content="2013-08-20">
+              2013-08-20
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/language/" itemprop="url" rel="index">
+                    <span itemprop="name">语言</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>ConcurrentHashMap 是 util.concurrent 包的重要成员。本文将结合 Java 内存模型，分析 JDK 源代码，探索 ConcurrentHashMap 高并发的具体实现机制。</p>
+<a id="more"></a>
+<h1 id="结构分析"><a href="#结构分析" class="headerlink" title="结构分析"></a>结构分析</h1><p>ConcurrentHashMap 类中包含两个静态内部类 HashEntry 和 Segment。HashEntry 用来封装映射表的键 / 值对；Segment 用来充当锁的角色，每个 Segment 对象守护整个散列映射表的若干个桶。每个桶是由若干个 HashEntry 对象链接起来的链表。一个 ConcurrentHashMap 实例中包含由若干个 Segment 对象组成的数组。<em>声明</em>: 以下源码是针对 <code>JDK 1.6</code></p>
+<h2 id="ConcurrentHashMap-类"><a href="#ConcurrentHashMap-类" class="headerlink" title="ConcurrentHashMap 类"></a>ConcurrentHashMap 类</h2><p>ConcurrentHashMap 在默认并发级别会创建包含 16 个 Segment 对象的数组。每个 Segment 的成员对象 table 包含若干个散列表的桶。每个桶是由 HashEntry 链接起来的一个链表。如果键能均匀散列，每个 Segment 大约守护整个散列表中桶总数的 1/16。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConcurrentHashMap</span>&lt;<span class="title">K</span>, <span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">AbstractMap</span>&lt;<span class="title">K</span>, <span class="title">V</span>&gt; </span></span><br><span class="line"><span class="class">       <span class="keyword">implements</span> <span class="title">ConcurrentMap</span>&lt;<span class="title">K</span>, <span class="title">V</span>&gt;, <span class="title">Serializable</span> </span>&#123; </span><br><span class="line"> </span><br><span class="line">   <span class="comment">/** </span></span><br><span class="line"><span class="comment">    * 散列映射表的默认初始容量为 16，即初始默认为 16 个桶</span></span><br><span class="line"><span class="comment">    * 在构造函数中没有指定这个参数时，使用本参数</span></span><br><span class="line"><span class="comment">    */</span> </span><br><span class="line">   <span class="keyword">static</span> <span class="keyword">final</span>     <span class="keyword">int</span> DEFAULT_INITIAL_CAPACITY= <span class="number">16</span>; </span><br><span class="line"> </span><br><span class="line">   <span class="comment">/** </span></span><br><span class="line"><span class="comment">    * 散列映射表的默认装载因子为 0.75，该值是 table 中包含的 HashEntry 元素的个数与</span></span><br><span class="line"><span class="comment">* table 数组长度的比值</span></span><br><span class="line"><span class="comment">    * 当 table 中包含的 HashEntry 元素的个数超过了 table 数组的长度与装载因子的乘积时，</span></span><br><span class="line"><span class="comment">* 将触发 再散列</span></span><br><span class="line"><span class="comment">    * 在构造函数中没有指定这个参数时，使用本参数</span></span><br><span class="line"><span class="comment">    */</span> </span><br><span class="line">   <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">float</span> DEFAULT_LOAD_FACTOR= <span class="number">0.75f</span>; </span><br><span class="line"> </span><br><span class="line">   <span class="comment">/** </span></span><br><span class="line"><span class="comment">    * 散列表的默认并发级别为 16。该值表示当前更新线程的估计数</span></span><br><span class="line"><span class="comment">    * 在构造函数中没有指定这个参数时，使用本参数</span></span><br><span class="line"><span class="comment">    */</span> </span><br><span class="line">   <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> DEFAULT_CONCURRENCY_LEVEL= <span class="number">16</span>; </span><br><span class="line"> </span><br><span class="line">   <span class="comment">/** </span></span><br><span class="line"><span class="comment">    * segments 的掩码值</span></span><br><span class="line"><span class="comment">    * key 的散列码的高位用来选择具体的 segment </span></span><br><span class="line"><span class="comment">    */</span> </span><br><span class="line">   <span class="keyword">final</span> <span class="keyword">int</span> segmentMask; </span><br><span class="line"> </span><br><span class="line">   <span class="comment">/** </span></span><br><span class="line"><span class="comment">    * 偏移量</span></span><br><span class="line"><span class="comment">    */</span> </span><br><span class="line">   <span class="keyword">final</span> <span class="keyword">int</span> segmentShift; </span><br><span class="line"> </span><br><span class="line">   <span class="comment">/** </span></span><br><span class="line"><span class="comment">    * 由 Segment 对象组成的数组</span></span><br><span class="line"><span class="comment">    */</span> </span><br><span class="line">   <span class="keyword">final</span> Segment&lt;K,V&gt;[] segments; </span><br><span class="line"> </span><br><span class="line">   <span class="comment">/** </span></span><br><span class="line"><span class="comment">    * 创建一个带有指定初始容量、加载因子和并发级别的新的空映射。</span></span><br><span class="line"><span class="comment">    */</span> </span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="title">ConcurrentHashMap</span><span class="params">(<span class="keyword">int</span> initialCapacity, </span></span></span><br><span class="line"><span class="function"><span class="params">                            <span class="keyword">float</span> loadFactor, <span class="keyword">int</span> concurrencyLevel)</span> </span>&#123; </span><br><span class="line">       <span class="keyword">if</span>(!(loadFactor &gt; <span class="number">0</span>) || initialCapacity &lt; <span class="number">0</span> || </span><br><span class="line">concurrencyLevel &lt;= <span class="number">0</span>) </span><br><span class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(); </span><br><span class="line"> </span><br><span class="line">       <span class="keyword">if</span>(concurrencyLevel &gt; MAX_SEGMENTS) </span><br><span class="line">           concurrencyLevel = MAX_SEGMENTS; </span><br><span class="line"> </span><br><span class="line">       <span class="comment">// 寻找最佳匹配参数（不小于给定参数的最接近的 2 次幂） </span></span><br><span class="line">       <span class="keyword">int</span> sshift = <span class="number">0</span>; </span><br><span class="line">       <span class="keyword">int</span> ssize = <span class="number">1</span>; </span><br><span class="line">       <span class="keyword">while</span>(ssize &lt; concurrencyLevel) &#123; </span><br><span class="line">           ++sshift; </span><br><span class="line">           ssize &lt;&lt;= <span class="number">1</span>; </span><br><span class="line">       &#125; </span><br><span class="line">       segmentShift = <span class="number">32</span> - sshift;       <span class="comment">// 偏移量值</span></span><br><span class="line">       segmentMask = ssize - <span class="number">1</span>;           <span class="comment">// 掩码值 </span></span><br><span class="line">       <span class="keyword">this</span>.segments = Segment.newArray(ssize);   <span class="comment">// 创建数组</span></span><br><span class="line"> </span><br><span class="line">       <span class="keyword">if</span> (initialCapacity &gt; MAXIMUM_CAPACITY) </span><br><span class="line">           initialCapacity = MAXIMUM_CAPACITY; </span><br><span class="line">       <span class="keyword">int</span> c = initialCapacity / ssize; </span><br><span class="line">       <span class="keyword">if</span>(c * ssize &lt; initialCapacity) </span><br><span class="line">           ++c; </span><br><span class="line">       <span class="keyword">int</span> cap = <span class="number">1</span>; </span><br><span class="line">       <span class="keyword">while</span>(cap &lt; c) </span><br><span class="line">           cap &lt;&lt;= <span class="number">1</span>; </span><br><span class="line"> </span><br><span class="line">       <span class="comment">// 依次遍历每个数组元素</span></span><br><span class="line">       <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="keyword">this</span>.segments.length; ++i) </span><br><span class="line">           <span class="comment">// 初始化每个数组元素引用的 Segment 对象</span></span><br><span class="line"><span class="keyword">this</span>.segments[i] = <span class="keyword">new</span> Segment&lt;K,V&gt;(cap, loadFactor); </span><br><span class="line">   &#125; </span><br><span class="line"> </span><br><span class="line">   <span class="comment">/** </span></span><br><span class="line"><span class="comment">    * 创建一个带有默认初始容量 (16)、默认加载因子 (0.75) 和 默认并发级别 (16) </span></span><br><span class="line"><span class="comment"> * 的空散列映射表。</span></span><br><span class="line"><span class="comment">    */</span> </span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="title">ConcurrentHashMap</span><span class="params">()</span> </span>&#123; </span><br><span class="line">       <span class="comment">// 使用三个默认参数，调用上面重载的构造函数来创建空散列映射表</span></span><br><span class="line"><span class="keyword">this</span>(DEFAULT_INITIAL_CAPACITY, DEFAULT_LOAD_FACTOR, DEFAULT_CONCURRENCY_LEVEL); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>结构示意图：</p>
+<p><img src="/images/concurrentHashMap/image005.jpg" alt="ConcurrentHashMap"></p>
+<h2 id="HashEntry-类"><a href="#HashEntry-类" class="headerlink" title="HashEntry 类"></a>HashEntry 类</h2><p>HashEntry 用来封装散列映射表中的键值对。在 HashEntry 类中，key，hash 和 next 域都被声明为 final 型，value 域被声明为 volatile 型。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">HashEntry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123; </span><br><span class="line">       <span class="keyword">final</span> K key;                       <span class="comment">// 声明 key 为 final 型</span></span><br><span class="line">       <span class="keyword">final</span> <span class="keyword">int</span> hash;                   <span class="comment">// 声明 hash 值为 final 型 </span></span><br><span class="line">       <span class="keyword">volatile</span> V value;                 <span class="comment">// 声明 value 为 volatile 型</span></span><br><span class="line">       <span class="keyword">final</span> HashEntry&lt;K,V&gt; next;      <span class="comment">// 声明 next 为 final 型 </span></span><br><span class="line"> </span><br><span class="line">       HashEntry(K key, <span class="keyword">int</span> hash, HashEntry&lt;K,V&gt; next, V value) &#123; </span><br><span class="line">           <span class="keyword">this</span>.key = key; </span><br><span class="line">           <span class="keyword">this</span>.hash = hash; </span><br><span class="line">           <span class="keyword">this</span>.next = next; </span><br><span class="line">           <span class="keyword">this</span>.value = value; </span><br><span class="line">       &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在 ConcurrentHashMap 中，在散列时如果产生“碰撞”，将采用“分离链接法”来处理“碰撞”：把“碰撞”的 HashEntry 对象链接成一个链表。由于 HashEntry 的 next 域为 final 型，所以新节点只能在链表的表头处插入。</p>
+<h2 id="Segment-类"><a href="#Segment-类" class="headerlink" title="Segment 类"></a>Segment 类</h2><p>Segment 类继承于 ReentrantLock 类，从而使得 Segment 对象能充当锁的角色。每个 Segment 对象用来守护其（成员对象 table 中）包含的若干个桶。</p>
+<p>table 是一个由 HashEntry 对象组成的数组。table 数组的每一个数组成员就是散列映射表的一个桶。</p>
+<p>count 变量是一个计数器，它表示每个 Segment 对象管理的 table 数组（若干个 HashEntry 组成的链表）包含的 HashEntry 对象的个数。每一个 Segment 对象都有一个 count 对象来表示本 Segment 中包含的 HashEntry 对象的总数。注意，之所以在每个 Segment 对象中包含一个计数器，而不是在 <code>ConcurrentHashMap 中使用全局的计数器，是为了避免出现“热点域”而影响 ConcurrentHashMap 的并发性。</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Segment</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">ReentrantLock</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123; </span><br><span class="line">       <span class="comment">/** </span></span><br><span class="line"><span class="comment">        * 在本 segment 范围内，包含的 HashEntry 元素的个数</span></span><br><span class="line"><span class="comment">        * 该变量被声明为 volatile 型</span></span><br><span class="line"><span class="comment">        */</span> </span><br><span class="line">       <span class="keyword">transient</span> <span class="keyword">volatile</span> <span class="keyword">int</span> count; </span><br><span class="line"> </span><br><span class="line">       <span class="comment">/** </span></span><br><span class="line"><span class="comment">        * table 被更新的次数</span></span><br><span class="line"><span class="comment">        */</span> </span><br><span class="line">       <span class="keyword">transient</span> <span class="keyword">int</span> modCount; </span><br><span class="line"> </span><br><span class="line">       <span class="comment">/** </span></span><br><span class="line"><span class="comment">        * 当 table 中包含的 HashEntry 元素的个数超过本变量值时，触发 table 的再散列</span></span><br><span class="line"><span class="comment">        */</span> </span><br><span class="line">       <span class="keyword">transient</span> <span class="keyword">int</span> threshold; </span><br><span class="line"> </span><br><span class="line">       <span class="comment">/** </span></span><br><span class="line"><span class="comment">        * table 是由 HashEntry 对象组成的数组</span></span><br><span class="line"><span class="comment">        * 如果散列时发生碰撞，碰撞的 HashEntry 对象就以链表的形式链接成一个链表</span></span><br><span class="line"><span class="comment">        * table 数组的数组成员代表散列映射表的一个桶</span></span><br><span class="line"><span class="comment">        * 每个 table 守护整个 ConcurrentHashMap 包含桶总数的一部分</span></span><br><span class="line"><span class="comment">        * 如果并发级别为 16，table 则守护 ConcurrentHashMap 包含的桶总数的 1/16 </span></span><br><span class="line"><span class="comment">        */</span> </span><br><span class="line">       <span class="keyword">transient</span> <span class="keyword">volatile</span> HashEntry&lt;K,V&gt;[] table; </span><br><span class="line"> </span><br><span class="line">       <span class="comment">/** </span></span><br><span class="line"><span class="comment">        * 装载因子</span></span><br><span class="line"><span class="comment">        */</span> </span><br><span class="line">       <span class="keyword">final</span> <span class="keyword">float</span> loadFactor; </span><br><span class="line"> </span><br><span class="line">       Segment(<span class="keyword">int</span> initialCapacity, <span class="keyword">float</span> lf) &#123; </span><br><span class="line">           loadFactor = lf; </span><br><span class="line">           setTable(HashEntry.&lt;K,V&gt;newArray(initialCapacity)); </span><br><span class="line">       &#125; </span><br><span class="line"> </span><br><span class="line">       <span class="comment">/** </span></span><br><span class="line"><span class="comment">        * 设置 table 引用到这个新生成的 HashEntry 数组</span></span><br><span class="line"><span class="comment">        * 只能在持有锁或构造函数中调用本方法</span></span><br><span class="line"><span class="comment">        */</span> </span><br><span class="line">       <span class="function"><span class="keyword">void</span> <span class="title">setTable</span><span class="params">(HashEntry&lt;K,V&gt;[] newTable)</span> </span>&#123; </span><br><span class="line">           <span class="comment">// 计算临界阀值为新数组的长度与装载因子的乘积</span></span><br><span class="line">           threshold = (<span class="keyword">int</span>)(newTable.length * loadFactor); </span><br><span class="line">           table = newTable; </span><br><span class="line">       &#125; </span><br><span class="line"> </span><br><span class="line">       <span class="comment">/** </span></span><br><span class="line"><span class="comment">        * 根据 key 的散列值，找到 table 中对应的那个桶（table 数组的某个数组成员）</span></span><br><span class="line"><span class="comment">        */</span> </span><br><span class="line">       <span class="function">HashEntry&lt;K,V&gt; <span class="title">getFirst</span><span class="params">(<span class="keyword">int</span> hash)</span> </span>&#123; </span><br><span class="line">           HashEntry&lt;K,V&gt;[] tab = table; </span><br><span class="line">           <span class="comment">// 把散列值与 table 数组长度减 1 的值相“与”，</span></span><br><span class="line"><span class="comment">// 得到散列值对应的 table 数组的下标</span></span><br><span class="line">           <span class="comment">// 然后返回 table 数组中此下标对应的 HashEntry 元素</span></span><br><span class="line">           <span class="keyword">return</span> tab[hash &amp; (tab.length - <span class="number">1</span>)]; </span><br><span class="line">       &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>插入三个节点后 Segment 的结构示意图：</p>
+<p><img src="/images/concurrentHashMap/image004.jpg" alt="Segment"></p>
+<h2 id="Put-方法的实现"><a href="#Put-方法的实现" class="headerlink" title="Put 方法的实现"></a>Put 方法的实现</h2><p>1.根据 key 计算出对应的 hash 值：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123; </span><br><span class="line">       <span class="keyword">if</span> (value == <span class="keyword">null</span>)          <span class="comment">//ConcurrentHashMap 中不允许用 null 作为映射值</span></span><br><span class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(); </span><br><span class="line">       <span class="keyword">int</span> hash = hash(key.hashCode());        <span class="comment">// 计算键对应的散列码</span></span><br><span class="line">       <span class="comment">// 根据散列码找到对应的 Segment </span></span><br><span class="line">       <span class="keyword">return</span> segmentFor(hash).put(key, hash, value, <span class="keyword">false</span>); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>2.根据 hash 值找到对应的 Segment:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** </span></span><br><span class="line"><span class="comment">    * 使用 key 的散列码来得到 segments 数组中对应的 Segment </span></span><br><span class="line"><span class="comment">    */</span> </span><br><span class="line"><span class="function"><span class="keyword">final</span> Segment&lt;K,V&gt; <span class="title">segmentFor</span><span class="params">(<span class="keyword">int</span> hash)</span> </span>&#123; </span><br><span class="line">   <span class="comment">// 将散列值右移 segmentShift 个位，并在高位填充 0 </span></span><br><span class="line">   <span class="comment">// 然后把得到的值与 segmentMask 相“与”</span></span><br><span class="line"><span class="comment">// 从而得到 hash 值对应的 segments 数组的下标值</span></span><br><span class="line"><span class="comment">// 最后根据下标值返回散列码对应的 Segment 对象</span></span><br><span class="line">       <span class="keyword">return</span> segments[(hash &gt;&gt;&gt; segmentShift) &amp; segmentMask]; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>3.在 Segment 中执行具体的 put 操作</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">V <span class="title">put</span><span class="params">(K key, <span class="keyword">int</span> hash, V value, <span class="keyword">boolean</span> onlyIfAbsent)</span> </span>&#123; </span><br><span class="line">           lock();  <span class="comment">// 加锁，这里是锁定某个 Segment 对象而非整个 ConcurrentHashMap </span></span><br><span class="line">           <span class="keyword">try</span> &#123; </span><br><span class="line">               <span class="keyword">int</span> c = count; </span><br><span class="line"> </span><br><span class="line">               <span class="keyword">if</span> (c++ &gt; threshold)     <span class="comment">// 如果超过再散列的阈值</span></span><br><span class="line">                   rehash();              <span class="comment">// 执行再散列，table 数组的长度将扩充一倍</span></span><br><span class="line"> </span><br><span class="line">               HashEntry&lt;K,V&gt;[] tab = table; </span><br><span class="line">               <span class="comment">// 把散列码值与 table 数组的长度减 1 的值相“与”</span></span><br><span class="line">               <span class="comment">// 得到该散列码对应的 table 数组的下标值</span></span><br><span class="line">               <span class="keyword">int</span> index = hash &amp; (tab.length - <span class="number">1</span>); </span><br><span class="line">               <span class="comment">// 找到散列码对应的具体的那个桶</span></span><br><span class="line">               HashEntry&lt;K,V&gt; first = tab[index]; </span><br><span class="line"> </span><br><span class="line">               HashEntry&lt;K,V&gt; e = first; </span><br><span class="line">               <span class="keyword">while</span> (e != <span class="keyword">null</span> &amp;&amp; (e.hash != hash || !key.equals(e.key))) </span><br><span class="line">                   e = e.next; </span><br><span class="line"> </span><br><span class="line">               V oldValue; </span><br><span class="line">               <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123;            <span class="comment">// 如果键 / 值对以经存在</span></span><br><span class="line">                   oldValue = e.value; </span><br><span class="line">                   <span class="keyword">if</span> (!onlyIfAbsent) </span><br><span class="line">                       e.value = value;    <span class="comment">// 设置 value 值</span></span><br><span class="line">               &#125; </span><br><span class="line">               <span class="keyword">else</span> &#123;                        <span class="comment">// 键 / 值对不存在 </span></span><br><span class="line">                   oldValue = <span class="keyword">null</span>; </span><br><span class="line">                   ++modCount;         <span class="comment">// 要添加新节点到链表中，所以 modCont 要加 1  </span></span><br><span class="line">                   <span class="comment">// 创建新节点，并添加到链表的头部 </span></span><br><span class="line">                   tab[index] = <span class="keyword">new</span> HashEntry&lt;K,V&gt;(key, hash, first, value); </span><br><span class="line">                   count = c;               <span class="comment">// 写 count 变量</span></span><br><span class="line">               &#125; </span><br><span class="line">               <span class="keyword">return</span> oldValue; </span><br><span class="line">           &#125; <span class="keyword">finally</span> &#123; </span><br><span class="line">               unlock();                     <span class="comment">// 解锁</span></span><br><span class="line">           &#125; </span><br><span class="line">       &#125;</span><br></pre></td></tr></table></figure>
+<p>加锁操作是针对（键的 hash 值对应的）某个具体的 Segment，锁定的是该 Segment 而不是整个 ConcurrentHashMap<code>。因为插入键 / 值对操作只是在这个 Segment 包含的某个桶中完成，不需要锁定整个</code>ConcurrentHashMap。<code>此时，其他写线程对另外 15 个</code>Segment 的加锁并不会因为当前线程对这个 Segment 的加锁而阻塞。同时，所有读线程几乎不会因本线程的加锁而阻塞（除非读线程刚好读到这个 Segment 中某个 <code>HashEntry 的 value 域的值为 null，此时需要加锁后重新读取该值</code>）。</p>
+<p>相比较于 <code>HashTable 和由同步包装器包装的 HashMap`</code>每次只能有一个线程执行读或写操作，`ConcurrentHashMap 在并发访问性能上有了质的提高。<em>在理想状态下</em>，ConcurrentHashMap 可以支持 16 个线程执行并发写操作（如果并发级别设置为 16），及任意数量线程的读操作。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>ConcurrentHashMap 是一个并发散列映射表的实现，它允许完全并发的读取，并且支持给定数量的并发更新。相比于 <code>HashTable 和</code>用同步包装器包装的 HashMap（Collections.synchronizedMap(new HashMap())），ConcurrentHashMap 拥有更高的并发性。在 <code>HashTable 和由同步包装器包装的 HashMap 中，使用一个全局的锁来同步不同线程间的并发访问。同一时间点，只能有一个线程持有锁，也就是说在同一时间点，只能有一个线程能访问容器。这虽然保证多线程间的安全并发访问，但同时也导致对容器的访问变成`</code><em>串行化</em><code></code>的了。`</p>
+<p>在使用锁来协调多线程间并发访问的模式下，减小对锁的竞争可以有效提高并发性。有两种方式可以减小对锁的竞争：</p>
+<ol>
+<li>减小请求 同一个锁的 频率。</li>
+<li>减少持有锁的 时间。</li>
+</ol>
+<p>ConcurrentHashMap 的高并发性主要来自于三个方面：</p>
+<ol>
+<li>用分离锁实现多个线程间的更深层次的共享访问。</li>
+<li>用 HashEntery 对象的不变性来降低执行读操作的线程在遍历链表期间对加锁的需求。</li>
+<li>通过对同一个 Volatile 变量的写 / 读访问，协调不同线程间读 / 写操作的内存可见性。</li>
+</ol>
+<p>使用分离锁，减小了请求 <em>同一个锁</em>的频率。</p>
+<p>通过 HashEntery 对象的不变性及对同一个 Volatile 变量的读 / 写来协调内存可见性，使得 读操作大多数时候不需要加锁就能成功获取到需要的值。由于散列映射表在实际应用中大多数操作都是成功的 读操作，所以 2 和 3 既可以减少请求同一个锁的频率，也可以有效减少持有锁的时间。</p>
+<p>通过减小请求同一个锁的频率和尽量减少持有锁的时间 <code>，使得 ConcurrentHashMap 的并发性相对于 HashTable 和</code>用同步包装器包装的 HashMap<code>有了质的提高。</code></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ConcurrentHashMap/" rel="tag">#ConcurrentHashMap</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/product/threadpool/" rel="next" title="线程池探究">
+                <i class="fa fa-chevron-left"></i> 线程池探究
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/algorithm/binarysearch/" rel="prev" title="二分查找真的不简单">
+                二分查找真的不简单 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="James" />
+          <p class="site-author-name" itemprop="name">James</p>
+          <p class="site-description motion-element" itemprop="description">好记心不如烂笔头</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">11</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/onelee85" target="_blank" title="Github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Github
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#结构分析"><span class="nav-number">2.</span> <span class="nav-text">结构分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ConcurrentHashMap-类"><span class="nav-number">2.1.</span> <span class="nav-text">ConcurrentHashMap 类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HashEntry-类"><span class="nav-number">2.2.</span> <span class="nav-text">HashEntry 类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Segment-类"><span class="nav-number">2.3.</span> <span class="nav-text">Segment 类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Put-方法的实现"><span class="nav-number">2.4.</span> <span class="nav-text">Put 方法的实现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">James</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+  
+  
+
+  
+
+  
+
+</body>
+</html>
