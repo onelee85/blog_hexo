@@ -106,6 +106,26 @@ SETNX是将 key 的值设为 value，当且仅当 key 不存在。若给定的 k
 ```
 
 
+最新版本jedis 解决获取锁设置失效时间原子问题，下面代码仅供参考:
+
+```java
+public boolean lock(String key, String request, int blockTime) throws InterruptedException {
+
+        while (blockTime >= 0) {
+
+            String result = this.jedis.set(lockPrefix + key, request, SET_IF_NOT_EXIST, SET_WITH_EXPIRE_TIME, 10 * TIME);
+            if (LOCK_MSG.equals(result)) {
+                return true;
+            }
+            blockTime -= sleepTime;
+
+            Thread.sleep(sleepTime);
+        }
+        return false;
+}
+```
+
+
 
 # 总结
 
