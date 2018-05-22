@@ -78,7 +78,42 @@ public static void sort(char[] src, int lo, int hi) {
 
 之前的算法是将数组分为两个部分，小于基准元素和大于基准元素，三向切分将数组分为三个部分：小于、等于和大于基准元素。所以我们需要更多的指针跟踪（lo, lt, i, gt, hi），我们让**a[ lo ... lt - 1 ]**存储小于基准元素的元素，**a[ lt ... i - 1]**存储等于基准元素的元素，**a[ i ... gt ]**存储未访问到、未确定大小的元素，**a[ gt + 1 ... hi ]**存储大于基准元素的元素。
 
-# 优势
+```java
+public static void sort(char[] arr, int lo, int hi) { 
+    int n = hi - lo + 1; // 当子数组的长度为 8 时，调用插入排序 
+    if (n <= CUTOFF) { insertionSort(arr, lo, hi); return; } 
+    // 调用三取样切分 
+    int m = median3(arr, lo, lo + n / 2, hi); 
+    exchange(arr, m, lo); 
+    int lt = lo; int gt = hi;
+    int v = arr[lo]; 
+    int i = lo;
+    while (i <= gt) { 
+        // arr[i] < v，交换 arr[lt] & arr[i]，将 lt & i 加一 
+        if (arr[i] < v) { exchange(arr, lt++, i++); } 
+        // arr[i] > v，交换 arr[gt] & arr[i]，将 gt 减一 else
+        if (arr[i] > v) { exchange(arr, i, gt--); } 
+        // arr[i] == v，将 i 加一 
+        else { 
+            i++; 
+        } 
+    } 
+    // arr[lo...lt-1] < v = arr[lt...gt] < arr[gt+1...hi] 
+    sort(arr, lo, lt - 1); 
+    sort(arr, gt + 1, hi); 
+}
+
+// 取 arr[i] arr[j] arr[k] 三个元素值的中间元素的下标 
+private static int median3(char[] arr, int i, int j, int k) { 
+    return (less(arr[i], arr[j]) ? 
+            (less(arr[j], arr[k]) ? j : less(arr[i], arr[k]) ? k : i) : 					(less(arr[k], arr[j]) ? j : less(arr[k], arr[i]) ? k : i)); 
+}
+
+```
+
+
+
+# 快速排序的优势
 
 相对于那些**初级排序算法**（插入排序、选择排序等），快速排序的优势不用多说，平均情况的线性对数级别比平方级别在性能上要好太多。而最差情况的平方级别完全可以通过随机化避免。
 
