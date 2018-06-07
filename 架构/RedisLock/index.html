@@ -92,7 +92,7 @@
 <meta property="og:site_name" content="James&#39;s 烂笔头">
 <meta property="og:description" content="关于分布式锁分布式环境下，数据一致性问题一直是一个比较重要的话题，而又不同于单进程的情况。分布式与单机情况下最大的不同在于其不是多线程而是多进程。多线程由于可以共享堆内存，因此可以简单的采取内存作为标记存储位置。而进程之间甚至可能都不在同一台物理机上，因此需要将标记存储在一个所有进程都能看到的地方。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-05-11T03:27:56.524Z">
+<meta property="og:updated_time" content="2018-05-28T06:42:57.786Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="基于Redis分布式锁">
 <meta name="twitter:description" content="关于分布式锁分布式环境下，数据一致性问题一直是一个比较重要的话题，而又不同于单进程的情况。分布式与单机情况下最大的不同在于其不是多线程而是多进程。多线程由于可以共享堆内存，因此可以简单的采取内存作为标记存储位置。而进程之间甚至可能都不在同一台物理机上，因此需要将标记存储在一个所有进程都能看到的地方。">
@@ -343,8 +343,10 @@
 </ul>
 <p>释放锁</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">unlock</span><span class="params">()</span></span>&#123;</span><br><span class="line">      mainRedis.execute(<span class="keyword">new</span> RedisCallback&lt;Boolean&gt;() &#123;</span><br><span class="line">          <span class="meta">@Override</span></span><br><span class="line">          <span class="function"><span class="keyword">public</span> Boolean <span class="title">doInRedis</span><span class="params">(RedisConnection connection)</span> <span class="keyword">throws</span> DataAccessException </span>&#123;</span><br><span class="line">              connection.watch(lock_key_bytes);<span class="comment">//redis事务,防止此时key超时，其他实例获得新锁被误删除</span></span><br><span class="line">              String alive_lock_value = KeyUtils.decode(connection.get(lock_key_bytes));</span><br><span class="line">              connection.multi();</span><br><span class="line">              <span class="comment">//对比value是否为当前线程</span></span><br><span class="line">              <span class="keyword">if</span> (alive_lock_value != <span class="keyword">null</span> &amp;&amp; lock_value.equals(alive_lock_value))&#123;</span><br><span class="line">                  connection.del(lock_key_bytes);</span><br><span class="line">              &#125;</span><br><span class="line">              <span class="keyword">return</span> connection.exec() != <span class="keyword">null</span>;</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-<p>最新版本jedis 解决获取锁设置失效时间原子问题，下面代码仅供参考:</p>
+<h2 id="实现方式2"><a href="#实现方式2" class="headerlink" title="实现方式2"></a>实现方式2</h2><p>最新版本jedis 解决获取锁设置失效时间原子问题，下面代码仅供参考:</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">lock</span><span class="params">(String key, String request, <span class="keyword">int</span> blockTime)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (blockTime &gt;= <span class="number">0</span>) &#123;</span><br><span class="line"></span><br><span class="line">            String result = <span class="keyword">this</span>.jedis.set(lockPrefix + key, request, SET_IF_NOT_EXIST, SET_WITH_EXPIRE_TIME, <span class="number">10</span> * TIME);</span><br><span class="line">            <span class="keyword">if</span> (LOCK_MSG.equals(result)) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            blockTime -= sleepTime;</span><br><span class="line"></span><br><span class="line">            Thread.sleep(sleepTime);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="实现方式3"><a href="#实现方式3" class="headerlink" title="实现方式3"></a>实现方式3</h2><p>设置Reids key超时时候可以用lua脚本达到原子操作。Redis如何实现的原子操作的呢?</p>
+<p>Redis 使用单个 Lua 解释器去运行所有脚本，并且 Redis 也保证脚本会以原子性(atomic)的方式执行：当某个脚本正在运行的时候，不会有其他脚本或 Redis 命令被执行。 </p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>至此一个基于 Redis 的分布式锁完成，但是依然有些问题。</p>
 <ul>
 <li>需要每个实例自己生成过期时间，要求多个客户端之间需要时间同步。</li>
@@ -462,7 +464,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">14</span>
+              <span class="site-state-item-count">15</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -470,7 +472,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-count">6</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -479,7 +481,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -519,7 +521,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#关于分布式锁"><span class="nav-number">1.</span> <span class="nav-text">关于分布式锁</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#常见分布式锁方案"><span class="nav-number">1.1.</span> <span class="nav-text">常见分布式锁方案</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基于Redis的实现"><span class="nav-number">2.</span> <span class="nav-text">基于Redis的实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#可靠性"><span class="nav-number">2.1.</span> <span class="nav-text">可靠性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#思路"><span class="nav-number">2.2.</span> <span class="nav-text">思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现方式1"><span class="nav-number">2.3.</span> <span class="nav-text">实现方式1</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#关于分布式锁"><span class="nav-number">1.</span> <span class="nav-text">关于分布式锁</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#常见分布式锁方案"><span class="nav-number">1.1.</span> <span class="nav-text">常见分布式锁方案</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基于Redis的实现"><span class="nav-number">2.</span> <span class="nav-text">基于Redis的实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#可靠性"><span class="nav-number">2.1.</span> <span class="nav-text">可靠性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#思路"><span class="nav-number">2.2.</span> <span class="nav-text">思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现方式1"><span class="nav-number">2.3.</span> <span class="nav-text">实现方式1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现方式2"><span class="nav-number">2.4.</span> <span class="nav-text">实现方式2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现方式3"><span class="nav-number">2.5.</span> <span class="nav-text">实现方式3</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
           </div>
         </section>
