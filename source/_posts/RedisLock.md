@@ -105,6 +105,7 @@ SETNX是将 key 的值设为 value，当且仅当 key 不存在。若给定的 k
     }
 ```
 
+## 实现方式2
 
 最新版本jedis 解决获取锁设置失效时间原子问题，下面代码仅供参考:
 
@@ -126,6 +127,12 @@ public boolean lock(String key, String request, int blockTime) throws Interrupte
 ```
 
 
+
+## 实现方式3
+
+设置Reids key超时时候可以用lua脚本达到原子操作。Redis如何实现的原子操作的呢?
+
+Redis 使用单个 Lua 解释器去运行所有脚本，并且 Redis 也保证脚本会以原子性(atomic)的方式执行：当某个脚本正在运行的时候，不会有其他脚本或 Redis 命令被执行。 
 
 # 总结
 
