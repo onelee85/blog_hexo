@@ -13,13 +13,13 @@ date: 2016-07-25 10:46:00
 
 # CPU 突然飚高
 
-思路：首先找出 CPU 飚高的那个 Java 进程，可能服务器会有多个 JVM 进程。然后找到那个进程中的 “问题线程”，最后根据线程堆栈信息找到问题代码。最后对代码进行排查。
+思路：首先找出 CPU 飚高的 Java 进程，可能服务器会有多个 JVM 进程。然后找到那个进程中的 “问题线程”，最后根据线程堆栈信息找到问题代码。最后对代码进行排查。
 
-1. 通过 top 命令找到 CPU 消耗最高的进程，并记住进程 ID。
+1. 通过 top 命令找到 CPU 消耗最高的进程，记录进程 ID。
 
    ![](/images/jvm_trouble/top.png)
 
-2. 再次通过 top -Hp [进程 ID] 找到 CPU 消耗最高的线程 ID，并记住线程 ID.
+2. 再次通过 top -Hp [进程 ID] 找到 CPU 消耗最高的线程 ID.
 
    ![](/images/jvm_trouble/thread.png)
 
@@ -30,30 +30,25 @@ date: 2016-07-25 10:46:00
 # 内存问题
 内存管理一般容易发生两种情况: 一种是内存溢出了;一种是GC频繁
 
-1. java.lang.OutOfMemoryError: PermGen space ，说明Java虚拟机的堆内存不够.
-   1. Java虚拟机的堆内存设置不够，可以通过参数-Xms、-Xmx来调整。 
+1. java.lang.OutOfMemoryError: PermGen space ，说明是Java虚拟机对永久代Perm内存设置不够。
+2. java.lang.OutOfMemoryError: Java heap space，说明Java虚拟机的堆内存不足。
+   1. 可以通过参数-Xms、-Xmx来调整。 
    2. 代码中创建了大量大对象，并且长时间不能被垃圾收集器收集（存在被引用）。 
-2. java.lang.OutOfMemoryError: Java heap space ，说明是Java虚拟机对永久代Perm内存设置不够。 
 
-## 排查:
+## 排查方法:
 
 1. top命令：Linux命令。可以查看实时的内存使用情况。   
 2. jmap -histo:live [pid]，然后分析具体的对象数目和占用内存大小，从而定位代码。 
-3. jmap -dump:live,format=b,file=xxx.dump [pid]，然后利用可视化工具(MAT，Jprofile，jvisualvm 等 
-4. )分析是否存在内存泄漏。 
-5. 提前对Java程序加上这些参数打印dump文件 `-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=./`
-6. GC 的优化有2个维度，一是频率，二是时长。 首先看频率，如果 YGC 超过5秒一次，甚至更长，说明系统内存过大，应该缩小容量，如果频率很高，说明 Eden 区过小，可以将 Eden 区增大，但整个新生代的容量应该在堆的 30% - 40%之间，eden，from 和 to 的比例应该在 8：1：1左右，这个比例可根据对象晋升的大小进行调整。
-
-
+3. jmap -dump:live,format=b,file=xxx.dump [pid]，然后利用可视化工具(MAT，Jprofile，jvisualvm 等分析是否存在内存泄漏。 
+4. 提前对Java程序加上参数打印dump文件 `-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=./`
+5. GC 的优化有2个维度，一是频率，二是时长。 首先看频率，如果 YGC 超过5秒一次，甚至更长，说明系统内存过大，应该缩小容量，如果频率很高，说明 Eden 区过小，可以将 Eden 区增大，但整个新生代的容量应该在堆的 30% - 40%之间，eden，from 和 to 的比例应该在 8：1：1左右，这个比例可根据对象晋升的大小进行调整。
 
 # 常用命令
 
 - **jps**: 显示系统内所有的JVM进程 
 
 - **jstat**: 用于监控虚拟机运行状态信息。它可以显示本地或者远程虚拟机进程的内存、垃圾收集、JIT编译 
-
   option：选项
-
   - `-class`
     监视类的装载/卸载数量、总空间以及类装载所耗时间；
   - `-gc`
