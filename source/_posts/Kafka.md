@@ -22,9 +22,7 @@ Kafka的诞生是LinkedIn为了解决数据管道问题应运而生的。它设�
 # 组件
 
 - Topic：主题，Kafka处理的消息的不同分类。
-
 - Broker：消息代理，Kafka集群中的一个kafka服务节点称为一个broker，主要存储消息数据。存在硬盘中。每个topic都是有分区的。
-
 - partition：Topic物理上的分组，一个topic在broker中被分为1个或者多个partition，分区在创建topic的时候指定，分区是kafka消息队列组织的最小单位，一个分区可以看作是一个FIFO（ First Input First Output的缩写，先入先出队列）的队列。如下图:
 
   ![](/images/kafka/topic.png)
@@ -55,7 +53,7 @@ Kafka的诞生是LinkedIn为了解决数据管道问题应运而生的。它设�
 
 # 客户端API
 
-Kafka Producer APIs
+## Producer APIs
 
 ```java
 class Producer {
@@ -68,7 +66,7 @@ class Producer {
 }
 ```
 
-KafKa Consumer APIs
+## Consumer APIs
 
 ```java
 class Consumer{
