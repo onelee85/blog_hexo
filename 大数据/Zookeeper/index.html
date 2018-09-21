@@ -1,0 +1,663 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.lug.ustc.edu.cn/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="zookeeper,分布式系统," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="概要Zookeeper是一个分布式服务协调框架，实现同步服务，配置维护和命名服务等分布式应用.，这些功能都是分布式系统中非常底层且必不可少的基本功能，但是如果需要程序员自己实现这些功能而且要达到高吞吐、低延迟同时还要保持一致性和可用性，实际上非常困难。因此zookeeper提供了这些功能，开发者在zookeeper之上构建自己的各种分布式系统。">
+<meta name="keywords" content="zookeeper,分布式系统">
+<meta property="og:type" content="article">
+<meta property="og:title" content="大数据-Zookeeper">
+<meta property="og:url" content="https://onelee85.github.io/大数据/Zookeeper/index.html">
+<meta property="og:site_name" content="James&#39;s 烂笔头">
+<meta property="og:description" content="概要Zookeeper是一个分布式服务协调框架，实现同步服务，配置维护和命名服务等分布式应用.，这些功能都是分布式系统中非常底层且必不可少的基本功能，但是如果需要程序员自己实现这些功能而且要达到高吞吐、低延迟同时还要保持一致性和可用性，实际上非常困难。因此zookeeper提供了这些功能，开发者在zookeeper之上构建自己的各种分布式系统。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://onelee85.github.io/images/zookeeper/zk-framework.png">
+<meta property="og:image" content="https://onelee85.github.io/images/zookeeper/zookeeper-tree.png">
+<meta property="og:updated_time" content="2018-09-21T03:43:10.784Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="大数据-Zookeeper">
+<meta name="twitter:description" content="概要Zookeeper是一个分布式服务协调框架，实现同步服务，配置维护和命名服务等分布式应用.，这些功能都是分布式系统中非常底层且必不可少的基本功能，但是如果需要程序员自己实现这些功能而且要达到高吞吐、低延迟同时还要保持一致性和可用性，实际上非常困难。因此zookeeper提供了这些功能，开发者在zookeeper之上构建自己的各种分布式系统。">
+<meta name="twitter:image" content="https://onelee85.github.io/images/zookeeper/zk-framework.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 3109763,
+      author: 'Charles0429'
+    }
+  };
+</script>
+
+  <title> 大数据-Zookeeper | James's 烂笔头 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">James's 烂笔头</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">好记心不如烂笔头</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                大数据-Zookeeper
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2018-03-19T10:15:00+08:00" content="2018-03-19">
+              2018-03-19
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/大数据/" itemprop="url" rel="index">
+                    <span itemprop="name">大数据</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h1><p>Zookeeper是一个分布式服务协调框架，实现同步服务，配置维护和命名服务等分布式应用.，这些功能都是分布式系统中非常底层且必不可少的基本功能，但是如果需要程序员自己实现这些功能而且要达到高吞吐、低延迟同时还要保持一致性和可用性，实际上非常困难。因此zookeeper提供了这些功能，开发者在zookeeper之上构建自己的各种分布式系统。</p>
+<a id="more"></a>
+<h1 id="架构简图"><a href="#架构简图" class="headerlink" title="架构简图"></a>架构简图</h1><p><img src="/images/zookeeper/zk-framework.png" alt=""></p>
+<h1 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h1><p>Zookeeper提供一个多层级的节点命名空间（节点称为znode），每个节点都用一个以斜杠（/）分隔的路径表示，而且每个节点都有父节点（根节点除外），非常类似于文件系统。</p>
+<p>下图所示:</p>
+<p><img src="/images/zookeeper/zookeeper-tree.png" alt=""></p>
+<p>znode节点可以含有数据，也可以没有。如果一个znode节点包含数据的话，那么数据是以字节数组的形式来存储。字节数组的具体格式依赖于应用本身的实现，Zookeeper不直接提供解析的支持，应用可以使用如Protocol<br>Buffer、Thrift、Avro或MessagePack等序列化包来处理保存于znode节点的数据。</p>
+<h2 id="znode类型"><a href="#znode类型" class="headerlink" title="znode类型"></a>znode类型</h2><ol>
+<li><strong>PERSISTENT</strong>：持久化ZNode节点，一旦创建这个ZNode点存储的数据不会主动消失，除非是客户端主动的delete。</li>
+<li><strong>EPHEMERAL</strong>：临时ZNode节点，Client连接到Zookeeper Service的时候会建立一个Session，之后用这个Zookeeper连接实例创建该类型的znode，一旦Client关闭了Zookeeper的连接，服务器就会清除Session，然后这个Session建立的ZNode节点都会从命名空间消失。总结就是，这个类型的znode的生命周期是和Client建立的连接一样的。</li>
+<li><strong>PERSISTENT_SEQUENTIAL</strong>：顺序自动编号的ZNode节点，这种znoe节点会根据当前已近存在的ZNode节点编号自动加 1，而且不会随Session断开而消失。</li>
+<li><strong>EPEMERAL_SEQUENTIAL</strong>：临时自动编号节点，ZNode节点编号会自动增加，但是会随Session消失而消失。</li>
+</ol>
+<h2 id="监视与通知"><a href="#监视与通知" class="headerlink" title="监视与通知"></a>监视与通知</h2><p>Zookeeper提供了基于通知（notification）的机制：客户端向Zookeeper对某个znode设置监视点（watch），当该znode发生变更时会触发一个通知。</p>
+<p>可以设置多种监视点：</p>
+<ul>
+<li>监听znode的数据变化</li>
+<li>监听znode子节点的变化</li>
+<li>监听znode的创建或删除</li>
+</ul>
+<p><strong>三个关键点：</strong>  </p>
+<p><strong>①</strong>  “监视点”是一次性的，当触发过一次之后，除非重新设置，新的数据变化不会提醒客户端。<br><strong>②</strong>  “监视点”将数据改变的通知客户端。如果数据改变是<strong>客户端A引起</strong>的，不能保证”监视点”通知事件会在引发数据修改的函数返回前<strong>到达客户端A</strong>。<br><strong>③</strong> 对于”监视点”，ZooKeeper有如下保证：客户端一定是在接收到”监视”事件（watch event）之后才接收到数据的改变信息。  </p>
+<h1 id="Zookeeper和CAP的关系"><a href="#Zookeeper和CAP的关系" class="headerlink" title="Zookeeper和CAP的关系"></a>Zookeeper和CAP的关系</h1><p>作为一个分布式系统，分区容错性是一个必须要考虑的关键点。一个分布式系统一旦丧失了分区容错性，也就表示放弃了扩展性。因为在分布式系统中，网络故障是经常出现的，一旦出现在这种问题就会导致整个系统不可用是绝对不能容忍的。所以，大部分分布式系统都会在保证分区容错性的前提下在一致性和可用性之间做权衡。</p>
+<p>ZooKeeper是CP（一致性+分区容错性）的，即任何时刻对ZooKeeper的访问请求能得到一致的数据结果，同时系统对网络分割具备容错性；但是它不能保证每次服务请求的可用性。也就是在极端环境下，ZooKeeper可能会丢弃一些请求，消费者程序需要重新请求才能获得结果。</p>
+<p>ZooKeeper是分布式协调服务，它的职责是保证数据在其管辖下的所有服务之间保持同步、一致；所以就不难理解为什么ZooKeeper被设计成CP而不是AP特性的了。而且，  作为ZooKeeper的核心实现算法<strong>Zab</strong>，就是解决了分布式系统下数据如何在多个服务之间保持同步问题的。</p>
+<h2 id="Zab协议"><a href="#Zab协议" class="headerlink" title="Zab协议"></a>Zab协议</h2><p><strong>Zab</strong>（ZooKeeper Atomic Broadcast）原子消息广播协议作为数据一致性的核心算法，Zab协议是专为Zookeeper设计的支持崩溃恢复原子消息广播算法。</p>
+<p>Zab协议核心如下：</p>
+<p>所有的事务请求必须一个全局唯一的服务器（Leader）来协调处理，集群其余的服务器称为follower服务器。Leader服务器负责将一个客户端请求转化为事务提议（Proposal），并将该proposal分发给集群所有的follower服务器。之后Leader服务器需要等待所有的follower服务器的反馈，一旦超过了半数的follower服务器进行了正确反馈后，那么Leader服务器就会再次向所有的follower服务器分发commit消息，要求其将前一个proposal进行提交。</p>
+<h1 id="应用场景和实践"><a href="#应用场景和实践" class="headerlink" title="应用场景和实践"></a>应用场景和实践</h1><h2 id="排它锁"><a href="#排它锁" class="headerlink" title="排它锁"></a>排它锁</h2><p>写锁或独占锁，若事务T1对数据对象O1加上了排它锁，那么在整个加锁期间，只允许事务T1对O1进行读取和更新操作，其他任何事务都不能再对这个数据对象进行任何类型的操作，直到T1释放了排它锁。</p>
+<h2 id="共享锁"><a href="#共享锁" class="headerlink" title="共享锁"></a>共享锁</h2><p>若事务T1对数据对象O1加上共享锁，那么当前事务只能对O1进行读取操作，其他事务也只能对这个数据对象加共享锁，直到该数据对象上的所有共享锁都被释放。</p>
+<p>简单伪代码:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> ZkClient zkClient;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">private</span> String path;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> String LOCK;</span><br><span class="line"></span><br><span class="line"><span class="comment">//上锁</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">lock</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (zkClient.exists(path))</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">else</span><span class="comment">//创建临时节点</span></span><br><span class="line">        <span class="keyword">return</span> zkClient.create(path, LOCK.getBytes(), CreateMode.EPHEMERAL) == <span class="keyword">null</span> ?<span class="keyword">true</span> : <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//解锁 </span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">unlock</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> zkClient.delete(path);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">islock</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> zkClient.exists(path);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="发布与订阅"><a href="#发布与订阅" class="headerlink" title="发布与订阅"></a>发布与订阅</h1><p>发布与订阅即所谓的配置管理，顾名思义就是将数据发布到ZK节点上，供订阅者动态获取数据，实现配置信息的集中式管理和动态更新。例如<strong>全局的配置信息</strong>，<strong>地址列表</strong>等就非常适合使用。集中式的配置管理在应用集群中是非常常见的，一般商业公司内部都会实现一套集中的配置管理中心，应对不同的应用集群对于共享各自配置的需求，并且在配置变更时能够通知到集群中的每一个机器。</p>
+<p><strong>例如</strong>：同一个应用系统需要多台 PC Server运行，但是它们运行的应用系统的某些配置项是相同的，如果要修改这些相同的配置项，那么就必须同时修改每台运行这个应用系统的 PC Server，这样非常麻烦而且容易出错。将配置信息保存在 Zookeeper 的某个目录节点中，然后将所有需要修改的应用机器监控配置信息的状态，一旦配置信息发生变化，每台应用机器就会收到 Zookeeper 的通知，然后从Zookeeper 获取新的配置信息应用到系统中。</p>
+<p>Zookeeper很容易实现这种集中式的配置管理，比如将所需要的配置信息放到<strong>/Configuration</strong> 节点上，集群中所有机器一启动就会通过Client对<strong>/Configuration</strong>这个节点进行监控【zk.exist(“/Configuration″,true)】，并且实现Watcher回调方法process()，那么在zookeeper上<strong>/Configuration</strong>节点下数据发生变化的时候，每个机器都会收到通知，Watcher回调方法将会被执行，那么应用再取下数据即可【zk.getData(“/Configuration″,false,null)】。</p>
+<h1 id="统一命名服务（Name-Service）"><a href="#统一命名服务（Name-Service）" class="headerlink" title="统一命名服务（Name Service）"></a>统一命名服务（Name Service）</h1><p><strong>(1) 场景描述</strong><br>分布式应用中，通常需要有一套完整的命名规则，既能够产生唯一的名称又便于人识别和记住，通常情况下用树形的名称结构是一个理想的选择，树形的名称结构是一个有层次的目录结构，既对人友好又不会重复。说到这里你可能想到了  JNDI，没错 Zookeeper 的 Name Service 与 JNDI 能够完成的功能是差不多的，它们都是将有层次的目录结构关联到一定资源上，但是Zookeeper的Name Service 更加是广泛意义上的关联，也许你并不需要将名称关联到特定资源上，你可能只需要一个不会重复名称，就像数据库中产生一个唯一的数字主键一样。</p>
+<p><strong>(2) 应用</strong><br>在分布式系统中，通过使用命名服务，客户端应用能够根据指定的名字来获取资源服务的地址，提供者等信息。被命名的实体通常可以是集群中的机器，提供的服务地址，进程对象等等，这些我们都可以统称他们为名字（Name）。其中较为常见的就是一些分布式服务框架中的服务地址列表。通过调用ZK提供的创建节点的API，能够很容易创建一个全局唯一的path，这个path就可以作为一个名称。Name  Service 已经是Zookeeper 内置的功能，你只要调用 Zookeeper 的 API 就能实现。如调用 create  接口就可以很容易创建一个目录节点。</p>
+<h1 id="分布通知-协调（Distribution-of-notification-coordination）"><a href="#分布通知-协调（Distribution-of-notification-coordination）" class="headerlink" title="分布通知/协调（Distribution of notification/coordination）"></a>分布通知/协调（Distribution of notification/coordination）</h1><p><strong>(1) 典型场景描述</strong><br>ZooKeeper中特有watcher注册与异步通知机制，能够很好的实现分布式环境下不同系统之间的通知与协调，实现对数据变更的实时处理。使用方法通常是不同系统都对ZK上同一个znode进行注册，监听znode的变化（包括znode本身内容及子节点的），其中一个系统update了znode，那么另一个系统能够收到通知，并作出相应处理。</p>
+<p><strong>(2) 应用</strong><br><strong>①</strong> 另一种<strong>心跳检测机制</strong>：检测系统和被检测系统之间并不直接关联起来，而是通过ZK上某个节点关联，大大减少系统耦合。</p>
+<p><strong>②</strong> 另一种<strong>系统调度模式</strong>：某系统由控制台和推送系统两部分组成，控制台的职责是控制推送系统进行相应的推送工作。管理人员在控制台作的一些操作，实际上是修改了ZK上某些节点的状态，而ZK就把这些变化通知给他们注册Watcher的客户端，即推送系统，于是，作出相应的推送任务。</p>
+<p><strong>③</strong> 另一种<strong>工作汇报模式</strong>：一些类似于任务分发系统，子任务启动后，到ZK来注册一个临时节点，并且定时将自己的进度进行汇报（将进度写回这个临时节点），这样任务管理者就能够实时知道任务进度。</p>
+<h1 id="集群管理（Cluster-Management）"><a href="#集群管理（Cluster-Management）" class="headerlink" title="集群管理（Cluster Management）"></a>集群管理（Cluster Management）</h1><p><strong>集群机器监控</strong>：<br>这通常用于那种对集群中机器状态，机器在线率有较高要求的场景，能够快速对集群中机器变化作出响应。这样的场景中，往往有一个监控系统，实时检测集群机器是否存活。过去的做法通常是：监控系统通过某种手段（比如ping）定时检测每个机器，或者每个机器自己定时向监控系统汇报”我还活着”。  这种做法可行，但是存在两个比较明显的问题：<br><strong>①</strong>  集群中机器有变动的时候，牵连修改的东西比较多。<br><strong>②</strong> 有一定的延时。</p>
+<p>利用ZooKeeper中两个特性，就可以实施另一种集群机器存活性监控系统：<br><strong>①</strong>  客户端在节点 x 上注册一个Watcher，那么如果 x 的子节点变化了，会通知该客户端。<br><strong>②</strong> 创建EPHEMERAL类型的节点，一旦客户端和服务器的会话结束或过期，那么该节点就会消失。</p>
+<p><strong>Master选举：</strong><br>Master选举则是zookeeper中最为经典的使用场景了，在分布式环境中，相同的业务应用分布在不同的机器上，有些业务逻辑，<strong>例如</strong>一些耗时的计算，网络I/O处，往往只需要让整个集群中的某一台机器进行执行，其余机器可以共享这个结果，这样可以大大减少重复劳动，提高性能，于是这个master选举便是这种场景下的碰到的主要问题。</p>
+<p>利用ZooKeeper中两个特性，就可以实施另一种集群中Master选举：<br><strong>①</strong> 利用ZooKeeper的强一致性，能够保证在分布式高并发情况下节点创建的全局唯一性，即：同时有多个客户端请求创建 /Master 节点，最终一定只有一个客户端请求能够创建成功。利用这个特性，就能很轻易的在分布式环境中进行集群选举了。<br><strong>②</strong>另外，这种场景演化一下，就是动态Master选举。这就要用到 EPHEMERAL_SEQUENTIAL类型节点的特性了，这样每个节点会自动被编号。允许所有请求都能够创建成功，但是得有个创建顺序，每次选取序列号最小的那个机器作为Master 。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/zookeeper/" rel="tag">#zookeeper</a>
+          
+            <a href="/tags/分布式系统/" rel="tag">#分布式系统</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/大数据/Kafka/" rel="next" title="大数据-Kafka">
+                <i class="fa fa-chevron-left"></i> 大数据-Kafka
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="James" />
+          <p class="site-author-name" itemprop="name">James</p>
+          <p class="site-description motion-element" itemprop="description">好记心不如烂笔头</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">23</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">26</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/onelee85" target="_blank" title="Github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Github
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概要"><span class="nav-number">1.</span> <span class="nav-text">概要</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#架构简图"><span class="nav-number">2.</span> <span class="nav-text">架构简图</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#节点"><span class="nav-number">3.</span> <span class="nav-text">节点</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#znode类型"><span class="nav-number">3.1.</span> <span class="nav-text">znode类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#监视与通知"><span class="nav-number">3.2.</span> <span class="nav-text">监视与通知</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Zookeeper和CAP的关系"><span class="nav-number">4.</span> <span class="nav-text">Zookeeper和CAP的关系</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Zab协议"><span class="nav-number">4.1.</span> <span class="nav-text">Zab协议</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#应用场景和实践"><span class="nav-number">5.</span> <span class="nav-text">应用场景和实践</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#排它锁"><span class="nav-number">5.1.</span> <span class="nav-text">排它锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#共享锁"><span class="nav-number">5.2.</span> <span class="nav-text">共享锁</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#发布与订阅"><span class="nav-number">6.</span> <span class="nav-text">发布与订阅</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#统一命名服务（Name-Service）"><span class="nav-number">7.</span> <span class="nav-text">统一命名服务（Name Service）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分布通知-协调（Distribution-of-notification-coordination）"><span class="nav-number">8.</span> <span class="nav-text">分布通知/协调（Distribution of notification/coordination）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#集群管理（Cluster-Management）"><span class="nav-number">9.</span> <span class="nav-text">集群管理（Cluster Management）</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">James</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+  
+  
+
+  
+
+  
+
+</body>
+</html>
