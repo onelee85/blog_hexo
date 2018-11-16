@@ -1,0 +1,643 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.lug.ustc.edu.cn/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="管理,研发," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="在现在的公司工作了快5年了。陪伴着公司从创业初期一直走到现在， 公司业务也从0发展到注册用户5000W+、月流水4000万，年流水5个亿。 研发团队从我一个人的单打独斗扩张到现在几个团队。一路走来，从高级研发到架构师，从架构师到项目总监的转型，临时接手大数据组种种的经历。接下来以个人的经验来总结下技术研发团队的管理心得。">
+<meta name="keywords" content="管理,研发">
+<meta property="og:type" content="article">
+<meta property="og:title" content="研发管理心得整理">
+<meta property="og:url" content="https://onelee85.github.io/管理/dev_manage/index.html">
+<meta property="og:site_name" content="James&#39;s 烂笔头">
+<meta property="og:description" content="在现在的公司工作了快5年了。陪伴着公司从创业初期一直走到现在， 公司业务也从0发展到注册用户5000W+、月流水4000万，年流水5个亿。 研发团队从我一个人的单打独斗扩张到现在几个团队。一路走来，从高级研发到架构师，从架构师到项目总监的转型，临时接手大数据组种种的经历。接下来以个人的经验来总结下技术研发团队的管理心得。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-11-15T01:27:19.363Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="研发管理心得整理">
+<meta name="twitter:description" content="在现在的公司工作了快5年了。陪伴着公司从创业初期一直走到现在， 公司业务也从0发展到注册用户5000W+、月流水4000万，年流水5个亿。 研发团队从我一个人的单打独斗扩张到现在几个团队。一路走来，从高级研发到架构师，从架构师到项目总监的转型，临时接手大数据组种种的经历。接下来以个人的经验来总结下技术研发团队的管理心得。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 3109763,
+      author: 'Charles0429'
+    }
+  };
+</script>
+
+  <title> 研发管理心得整理 | James's 烂笔头 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">James's 烂笔头</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">好记心不如烂笔头</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                研发管理心得整理
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2018-10-13T11:37:00+08:00" content="2018-10-13">
+              2018-10-13
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/管理/" itemprop="url" rel="index">
+                    <span itemprop="name">管理</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在现在的公司工作了快5年了。陪伴着公司从创业初期一直走到现在， 公司业务也从0发展到注册用户5000W+、月流水4000万，年流水5个亿。 研发团队从我一个人的单打独斗扩张到现在几个团队。一路走来，从高级研发到架构师，从架构师到项目总监的转型，临时接手大数据组种种的经历。接下来以个人的经验来总结下技术研发团队的管理心得。</p>
+<a id="more"></a>
+<p>经历几个阶段:</p>
+<p><strong>第一阶段</strong>: 对于我们这样一个创业公司来说，刚开始人不多，而且要求产品赶快上线进行第一轮验证，因此以产品灵活、响应快、研发与产品配合度高的情况就体现出来了。但这种模式是以产品快速响应用户需求为导向，对研发质量的不重视也为后来埋下了巨大的隐患。无论是代码规范性、性能的要求都缺乏足够的重视，导致后来很多代码无人能接手，很多技术瓶颈完全无法解决，最终没办法只能重构。</p>
+<p><strong>第二阶段</strong>: 是纯粹的直线职能制的流程化开发模式，按产品出需求、研发实现、测试验收的流程化进行的。这种模式的好处是各司其职，每个部门把自己的事做好就行，而且各部门在质量上都有提高，无论是产品的需求完整度，研发的代码和架构质量以及测试对细节的把控都有很大的提高。但也不是没有问题。这种模式对市场和用户的响应程度上就明显慢很多，而且没有人对整体项目的结果负责，产品也缺乏真正的核心功能和亮点。还有一方面是在团队协作上效率极低，相互推诿，相互攻击，不利于团结的情况时有发生，对公司整体团队氛围也影响很大。</p>
+<p><strong>第三阶段:</strong> 项目制度的模式，由产品发起需求，进行需求评审确定功能有价值进行研发，评估研发成本后，从各个部门调配研发、设计和测试人员资源。整个项目成员属于一个团队，每个人对自己负责的工作负责。产品做为对整体项目的结果负责，会把好最后的验收关。团队协作上的效率得到提升，大家目标一致，为了最终的项目交付积极努力工作。</p>
+<p>做为<strong>研发管理者的</strong>总结了如下几点:</p>
+<ul>
+<li>技术架构<ul>
+<li>建立公司主营业务中技术框架和实施模式</li>
+<li>建立技术体系标准</li>
+</ul>
+</li>
+<li>流程制度<ul>
+<li>建立高效率的技术团队</li>
+<li>建立健全的项目管理体系</li>
+<li>建立员工能力发展体系</li>
+</ul>
+</li>
+<li>知识体系<ul>
+<li>知识库管理体系，技术培训和分享体系</li>
+</ul>
+</li>
+<li>视野&amp;执行<ul>
+<li>具备技术前瞻性、战略落地能力</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/管理/" rel="tag">#管理</a>
+          
+            <a href="/tags/研发/" rel="tag">#研发</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/大数据/HBase/" rel="next" title="大数据-HBase">
+                <i class="fa fa-chevron-left"></i> 大数据-HBase
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="James" />
+          <p class="site-author-name" itemprop="name">James</p>
+          <p class="site-description motion-element" itemprop="description">好记心不如烂笔头</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">26</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">29</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/onelee85" target="_blank" title="Github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Github
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <p class="post-toc-empty">此文章未包含目录</p>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">James</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+  
+  
+
+  
+
+  
+
+</body>
+</html>
