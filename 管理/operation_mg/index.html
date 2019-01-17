@@ -1,0 +1,682 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.lug.ustc.edu.cn/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="运维," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="18年底火线回归公司大后端研发团队，全盘接手后端研发、运维和大数据组的团队管理工作。18年运维故障频发，问题严重，公司也高度的重视。故而准备花了1~2个季度时间彻底规划和整改运维相关的工作。">
+<meta name="keywords" content="运维">
+<meta property="og:type" content="article">
+<meta property="og:title" content="运维管理三二一">
+<meta property="og:url" content="https://onelee85.github.io/管理/operation_mg/index.html">
+<meta property="og:site_name" content="James&#39;s 烂笔头">
+<meta property="og:description" content="18年底火线回归公司大后端研发团队，全盘接手后端研发、运维和大数据组的团队管理工作。18年运维故障频发，问题严重，公司也高度的重视。故而准备花了1~2个季度时间彻底规划和整改运维相关的工作。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://onelee85.github.io/images/op_manage/machine_st.png">
+<meta property="og:image" content="https://onelee85.github.io/images/op_manage/app_st.png">
+<meta property="og:image" content="https://onelee85.github.io/images/op_manage/OP_life.jpeg">
+<meta property="og:updated_time" content="2019-01-15T08:06:25.280Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="运维管理三二一">
+<meta name="twitter:description" content="18年底火线回归公司大后端研发团队，全盘接手后端研发、运维和大数据组的团队管理工作。18年运维故障频发，问题严重，公司也高度的重视。故而准备花了1~2个季度时间彻底规划和整改运维相关的工作。">
+<meta name="twitter:image" content="https://onelee85.github.io/images/op_manage/machine_st.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: undefined,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> 运维管理三二一 | James's 烂笔头 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?6783c3663ad3a4aee432726abc0999c9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">James's 烂笔头</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">好记心不如烂笔头</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                运维管理三二一
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2019-01-09T13:51:00+08:00" content="2019-01-09">
+              2019-01-09
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/管理/" itemprop="url" rel="index">
+                    <span itemprop="name">管理</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>18年底火线回归公司大后端研发团队，全盘接手后端研发、运维和大数据组的团队管理工作。18年运维故障频发，问题严重，公司也高度的重视。故而准备花了1~2个季度时间彻底规划和整改运维相关的工作。</p>
+<a id="more"></a>
+<p><strong>先思考下：运维的职责是什么？</strong> </p>
+<p>可以归纳为：<strong>第一是基础架构标准化</strong>，<strong>第二是基础架构服务化</strong>。</p>
+<h1 id="基础架构标准化"><a href="#基础架构标准化" class="headerlink" title="基础架构标准化"></a>基础架构标准化</h1><p>为什么要做标准化？ 标准化的过程实际上就是对运维对象的识别和建模过程。形成统一的对象模型后，各方在统一的认知下展开有效协作，然后针对不同的运维对象，在抽取它们所对应的运维场景，接下来才是运维场景的自动化实现。</p>
+<h2 id="标准化的步骤"><a href="#标准化的步骤" class="headerlink" title="标准化的步骤"></a>标准化的步骤</h2><h3 id="基础设施"><a href="#基础设施" class="headerlink" title="基础设施"></a>基础设施</h3><ol>
+<li>第一步，识别实体对象, 主要有服务器、网络、IDC、机柜、存储和配件。</li>
+<li>第二部，识别对象属性，如服务器SN序列号、IP地址、厂商、配件设备（CPU、内存、硬盘、网卡、PCIE、BIOS）、维保信息； 网络设备：交换机、带宽等信息。</li>
+<li>第三部，识别对象之间的关联关系，网络拓扑图关系。</li>
+<li>第四步，识别运维场景：例如：采购、入库、安装、配置、上线、维修等等。 可视化和查询场景，状态（故障）展示。可以很直观地关注到资源细节。</li>
+</ol>
+<p><img src="/images/op_manage/machine_st.png" alt=""></p>
+<h3 id="应用层实施"><a href="#应用层实施" class="headerlink" title="应用层实施"></a>应用层实施</h3><ol>
+<li>第一步，识别对象： 这个识别过程是在架构设计或者拆分的时候确定下来的。</li>
+<li>第二步，识别对象属性：应用是业务的抽象逻辑，业务属性需要业务架构师在架构过程中识别出来。运维属性：<ol>
+<li>应用的元数据属性：一个应用的描述信息。应用名、应用owner、是否核心链路应用以及应用功能说明</li>
+<li>应用代码属性：编程语言以及版本，Gitlab地址。</li>
+<li>应用部署模式：基础软件包，语言包 Java、C++、Go 等；容器如 Tomcat、Jetty等。</li>
+<li>应用目录信息：运维脚本目录、日志目录、应用包目录、临时目录等等。</li>
+<li>应用运行脚本：启停脚本、监控监测脚本。</li>
+<li>运行时参数配置：运行端口、JVM参数等等。</li>
+</ol>
+</li>
+<li>第三步，识别对象关系：<ol>
+<li>应用于基础设施：包括应用与资源、应用与 VIP、应用与 DNS 等等的关系。</li>
+<li>应用与应用之间的关系：应用服务或 API 与其它应用服务和 API 的依赖关系。</li>
+<li>应用与各类基础组件之间的关系：如应用与缓存，应用与消息、应用与 DB 等等之间的关系。</li>
+</ol>
+</li>
+<li>第四步，识别应用的运维场景：应用创建、持续集成、持续发布、扩容、缩容、监控，容量评估、压测、限流降级。</li>
+</ol>
+<p><img src="/images/op_manage/app_st.png" alt=""></p>
+<h1 id="稳定性体系建设"><a href="#稳定性体系建设" class="headerlink" title="稳定性体系建设"></a>稳定性体系建设</h1><ul>
+<li>如何发现线上问题</li>
+<li>如何快速定位问题。</li>
+<li>如果快速从故障中恢复</li>
+<li>有效评估系统容量</li>
+<li>日常演练</li>
+</ul>
+<h1 id="运维需求处理"><a href="#运维需求处理" class="headerlink" title="运维需求处理"></a>运维需求处理</h1><ul>
+<li>为什么要这样做？</li>
+<li>谁要求做这件事情的？</li>
+<li>这样做的目的是什么？</li>
+<li>这样做是为了解决什么问题？<br>站在对方角度去考虑，去思考对方要解决的问题是什么。</li>
+</ul>
+<h1 id="软件生命周期阶段"><a href="#软件生命周期阶段" class="headerlink" title="软件生命周期阶段"></a>软件生命周期阶段</h1><p>运维大部分的工作是软件生命周期中的运行维护阶段，日常很多都是围绕这个开展的。如图：<br><img src="/images/op_manage/OP_life.jpeg" alt=""></p>
+<h1 id="持续交付体系建设"><a href="#持续交付体系建设" class="headerlink" title="持续交付体系建设"></a>持续交付体系建设</h1><p>持续交付体系是拉通运维和业务开发的关键纽带，是提升整个研发团队效率的关键部分。这个部分是整个软件或应用的生命周期的管理体系，包括从应用创建、研发阶段的持续集成，上线阶段的持续部署发布，再到线上运行阶段的各类资源服务扩容缩容等。</p>
+<ol>
+<li>配置管理：标准化和CMDB； 还包括版本控制、依赖配置、软件配置和环境配置四个部分。</li>
+<li>需求拆解：业务架构拆解的粒度和我们最终发布上线的粒度相匹配</li>
+<li>提交管理：开发完毕提交代码，分支合并。</li>
+<li>构建打包：代码编译成可发布的软件包</li>
+<li>自动化测试：功能测试和非功能性测试</li>
+<li>部署发布：发布到不同的环境，如开发、测试、预发布、以及线上全量环境</li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/运维/" rel="tag">#运维</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/数据库/mongodb_upgrade/" rel="next" title="Mongodb升级总结">
+                <i class="fa fa-chevron-left"></i> Mongodb升级总结
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="James" />
+          <p class="site-author-name" itemprop="name">James</p>
+          <p class="site-description motion-element" itemprop="description">好记心不如烂笔头</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">30</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/onelee85" target="_blank" title="Github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Github
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#基础架构标准化"><span class="nav-number">1.</span> <span class="nav-text">基础架构标准化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#标准化的步骤"><span class="nav-number">1.1.</span> <span class="nav-text">标准化的步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基础设施"><span class="nav-number">1.1.1.</span> <span class="nav-text">基础设施</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#应用层实施"><span class="nav-number">1.1.2.</span> <span class="nav-text">应用层实施</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#稳定性体系建设"><span class="nav-number">2.</span> <span class="nav-text">稳定性体系建设</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#运维需求处理"><span class="nav-number">3.</span> <span class="nav-text">运维需求处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#软件生命周期阶段"><span class="nav-number">4.</span> <span class="nav-text">软件生命周期阶段</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#持续交付体系建设"><span class="nav-number">5.</span> <span class="nav-text">持续交付体系建设</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">James</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+  
+  
+
+  
+
+  
+
+</body>
+</html>

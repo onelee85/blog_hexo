@@ -1,0 +1,659 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.lug.ustc.edu.cn/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="二分查找," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="简介二分查找法： 在一个有序数组中，取数组中的中间值和要找的值进行比较，当要查找的值大于中间值，则在右边的区间继续取一个中间值和要比较的数进行比较。当找查找的值小于中间值时则反之，直至最后要查找的值和中间值相同，则说明找到该值。 一般而言，对于包含n个元素的有序列表，用二分查找最多需要㏒₂n步，而简单查找最多需要n步。 问题编写二分查找法的代码看似简单，其实是很容易出错的，你必须注意各种边界条件的">
+<meta name="keywords" content="二分查找">
+<meta property="og:type" content="article">
+<meta property="og:title" content="二分查找真的不简单">
+<meta property="og:url" content="https://onelee85.github.io/algorithm/binarysearch/index.html">
+<meta property="og:site_name" content="James&#39;s 烂笔头">
+<meta property="og:description" content="简介二分查找法： 在一个有序数组中，取数组中的中间值和要找的值进行比较，当要查找的值大于中间值，则在右边的区间继续取一个中间值和要比较的数进行比较。当找查找的值小于中间值时则反之，直至最后要查找的值和中间值相同，则说明找到该值。 一般而言，对于包含n个元素的有序列表，用二分查找最多需要㏒₂n步，而简单查找最多需要n步。 问题编写二分查找法的代码看似简单，其实是很容易出错的，你必须注意各种边界条件的">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://onelee85.github.io/images/binarysearch/example1.png">
+<meta property="og:image" content="https://onelee85.github.io/images/binarysearch/example2.png">
+<meta property="og:updated_time" content="2018-04-18T09:27:41.501Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="二分查找真的不简单">
+<meta name="twitter:description" content="简介二分查找法： 在一个有序数组中，取数组中的中间值和要找的值进行比较，当要查找的值大于中间值，则在右边的区间继续取一个中间值和要比较的数进行比较。当找查找的值小于中间值时则反之，直至最后要查找的值和中间值相同，则说明找到该值。 一般而言，对于包含n个元素的有序列表，用二分查找最多需要㏒₂n步，而简单查找最多需要n步。 问题编写二分查找法的代码看似简单，其实是很容易出错的，你必须注意各种边界条件的">
+<meta name="twitter:image" content="https://onelee85.github.io/images/binarysearch/example1.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: undefined,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> 二分查找真的不简单 | James's 烂笔头 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?6783c3663ad3a4aee432726abc0999c9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">James's 烂笔头</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">好记心不如烂笔头</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                二分查找真的不简单
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-04-09T15:19:00+08:00" content="2015-04-09">
+              2015-04-09
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/algorithm/" itemprop="url" rel="index">
+                    <span itemprop="name">算法</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>二分查找法： 在一个有序数组中，取数组中的中间值和要找的值进行比较，当要查找的值大于中间值，则在右边的区间继续取一个中间值和要比较的数进行比较。当找查找的值小于中间值时则反之，直至最后要查找的值和中间值相同，则说明找到该值。</p>
+<p>一般而言，对于包含n个元素的有序列表，用二分查找最多需要<code>㏒₂n</code>步，而简单查找最多需要n步。</p>
+<h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><p>编写二分查找法的代码看似简单，其实是很容易出错的，你必须注意各种边界条件的处理，例如数组是空的，或者数组只有一个元素等等。别说你会出错，很多正规出版的算法书在讲解二分查找法时，他们给出的代码也是有错误的，据统计在美国出版的二十多本不同的讲算法的书中，只有五本对二分查找的代码实现是正确的。</p>
+<h1 id="show-code"><a href="#show-code" class="headerlink" title="show code"></a>show code</h1><h2 id="递归二分查找"><a href="#递归二分查找" class="headerlink" title="递归二分查找"></a>递归二分查找</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Integer <span class="title">binarySearch</span><span class="params">(Integer[] arrs, Integer val, Integer lo, Integer hi)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(lo &gt; hi) <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        Integer mid = (hi + lo) / <span class="number">2</span>;</span><br><span class="line">        <span class="keyword">if</span> (val &gt; arrs[mid]) <span class="keyword">return</span> binarySearch(arrs, val, mid + <span class="number">1</span>, hi);</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (val &lt; arrs[mid]) <span class="keyword">return</span> binarySearch(arrs, val, lo, mid - <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">return</span> mid;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="非递归"><a href="#非递归" class="headerlink" title="非递归"></a>非递归</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Integer <span class="title">binarySearchV1</span><span class="params">(Integer[] arrs, Integer val, Integer lo, Integer hi)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span>(hi &gt;= lo)&#123;</span><br><span class="line">            <span class="comment">//low + high 是会溢出的。只要这个数组我们开的足够大</span></span><br><span class="line">            <span class="comment">//Integer mid = (hi + lo) / 2;</span></span><br><span class="line">            Integer mid = ((hi - lo) &gt;&gt; <span class="number">2</span>) + lo;</span><br><span class="line">            <span class="keyword">if</span> (val &gt; arrs[mid]) lo = mid + <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (val &lt; arrs[mid]) hi = mid - <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">return</span> mid;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="易错点"><a href="#易错点" class="headerlink" title="易错点"></a>易错点</h1><ul>
+<li><em>死循环</em>: 在做的是整数运算，整除2了之后，对于奇数和偶数的行为还不一样，很有可能有些情况下我们并没有减小取值范围，而形成死循环</li>
+<li>退出条件。到底什么时候我们才觉得我们找不到呢</li>
+<li>差1错误。我们的左端点应该是当前可能区间的最小范围，那么右端点是最大范围呢，还是最大范围+1呢。我们取了中间值之后，在缩小区间时，有没有保持左右端点的这个假设的一致性呢？</li>
+</ul>
+<h1 id="扩展思考"><a href="#扩展思考" class="headerlink" title="扩展思考"></a>扩展思考</h1><h2 id="二分查找还有改进的空间吗"><a href="#二分查找还有改进的空间吗" class="headerlink" title="二分查找还有改进的空间吗?"></a>二分查找还有改进的空间吗?</h2><p>可以细微的评定下上面非递归版本的比较次数,假设以7个有序数列为例，图中能够清晰的看到查找一个元素成功或者失败需要比较次数。</p>
+<p><img src="/images/binarysearch/example1.png" alt="binary"></p>
+<p>先看成功的情况：分别为所有次数相加除以元素个数 :(2+3+4+4+5+5+6)29/7≈4+</p>
+<p>再看失败的情况:上图中虚线框中为失败的比较次数:(3+4+4+5+4+5+5+6)36/8=4.5</p>
+<p>故而可以得出平均查找长度均大致为O(1.5·㏒₂n)。</p>
+<p>可以发现向左和向右分支前的比较次数不想等。向左分支前只需要比较一次，而向右分支则需要比较两次；由此可以发现虽然递归深度是均衡的，但是转向成本不均衡。</p>
+<p>是不是可以通过调整递归深度的不均衡，对转向成本的不均衡进行补偿呢。</p>
+<h3 id="Fibonacci查找"><a href="#Fibonacci查找" class="headerlink" title="Fibonacci查找"></a>Fibonacci查找</h3><p>先看一段代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Integer <span class="title">fibSearch</span><span class="params">(Integer[] arrs, Integer val, Integer lo, Integer hi)</span> </span>&#123;</span><br><span class="line">    	Fib fibs = Fib.create(hi - lo) <span class="comment">//创建一个Fib数列 logn(hi-lo)</span></span><br><span class="line">        <span class="keyword">while</span>(hi &gt;= lo)&#123;</span><br><span class="line">            <span class="keyword">while</span>( hi - lo &lt; fib.get() ) fib.prev();<span class="comment">//通过向前的顺序查找确定轴点</span></span><br><span class="line">            <span class="comment">//Integer mid = (hi + lo) / 2;</span></span><br><span class="line">            Integer mid = lo + fib.get() - <span class="number">1</span> <span class="comment">//黄金比例切分</span></span><br><span class="line">            <span class="keyword">if</span> (val &gt; arrs[mid]) lo = mid + <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (val &lt; arrs[mid]) hi = mid - <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">return</span> mid;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>还是以7个有序数列为例，看看FIb查找元素的比较次数</p>
+<p><img src="/images/binarysearch/example2.png" alt="binary"></p>
+<p>平均成功查找比较次数=(2+3+4+4+5+5+5) / 7 = 28 / 7 = 4.00</p>
+<p>平均失败查找比较次数=(4+5+4+4+5+4+5+4) / 8 = 35 / 8 = 4.38</p>
+<p>跟上面的比较次数想比是不是有所优化。</p>
+<p>普通二分查找和FIb数列查找的不同其实就是选择轴点， 二分对应轴点=0.5;FIb查找对应抽点=0.6180399…所谓的黄金分割。</p>
+<h3 id="二分查找再优化"><a href="#二分查找再优化" class="headerlink" title="二分查找再优化"></a>二分查找再优化</h3><p>既然之前二分查找版本左右分支的转向代价是不平衡的，那么有办法能够做成平衡的吗?</p>
+<p>比如只做一次比较，所有分支只有2个方向，而不是3个方向。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Integer <span class="title">binarySearchV1</span><span class="params">(Integer[] arrs, Integer val, Integer lo, Integer hi)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span>(<span class="number">1</span> &lt; hi - lo )&#123;<span class="comment">//查找宽度缩短至1时，算法才会终止</span></span><br><span class="line">            Integer mid = ((hi - lo) &gt;&gt; <span class="number">2</span>) + lo;<span class="comment">//还是以中点为轴点</span></span><br><span class="line">            val &lt; arrs[mid] ? hi = mi : lo = mi<span class="comment">//每次比较都只有2个方向</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> (val == arrs[lo]) ? lo : -<span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但是相对于之前的版本，由于无论如何都需要比较完所有转向，所以最好的情况下更坏（例如第一次就能比配到需要查找的元素，之前版本是O(1)， 而优化的版本需要O(logn)），但是更坏的情况变好(之前的版本需要 1.5*logn，而优化版本只需要logn)。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/二分查找/" rel="tag">#二分查找</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/algorithm/datastruct-mind/" rel="next" title="数据结构与算法(思维导图)">
+                <i class="fa fa-chevron-left"></i> 数据结构与算法(思维导图)
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/algorithm/quicksort/" rel="prev" title="快速排序了解下">
+                快速排序了解下 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="James" />
+          <p class="site-author-name" itemprop="name">James</p>
+          <p class="site-description motion-element" itemprop="description">好记心不如烂笔头</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">30</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/onelee85" target="_blank" title="Github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Github
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题"><span class="nav-number">2.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#show-code"><span class="nav-number">3.</span> <span class="nav-text">show code</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#递归二分查找"><span class="nav-number">3.1.</span> <span class="nav-text">递归二分查找</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#非递归"><span class="nav-number">3.2.</span> <span class="nav-text">非递归</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#易错点"><span class="nav-number">4.</span> <span class="nav-text">易错点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#扩展思考"><span class="nav-number">5.</span> <span class="nav-text">扩展思考</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#二分查找还有改进的空间吗"><span class="nav-number">5.1.</span> <span class="nav-text">二分查找还有改进的空间吗?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Fibonacci查找"><span class="nav-number">5.1.1.</span> <span class="nav-text">Fibonacci查找</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二分查找再优化"><span class="nav-number">5.1.2.</span> <span class="nav-text">二分查找再优化</span></a></li></ol></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">James</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+  
+  
+
+  
+
+  
+
+</body>
+</html>

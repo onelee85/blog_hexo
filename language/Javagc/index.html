@@ -1,0 +1,701 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.lug.ustc.edu.cn/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Java,GC," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="介绍Java的内存分配与回收全部由JVM垃圾回收进程自动完成。与C语言不同，Java开发者不需要自己编写代码实现垃圾回收。本文主要通过几个方面来探索Java垃圾回收  什么时候需要垃圾回收 垃圾回收算法有哪些 垃圾回收器如何工作">
+<meta name="keywords" content="Java,GC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java垃圾回收探究">
+<meta property="og:url" content="https://onelee85.github.io/language/Javagc/index.html">
+<meta property="og:site_name" content="James&#39;s 烂笔头">
+<meta property="og:description" content="介绍Java的内存分配与回收全部由JVM垃圾回收进程自动完成。与C语言不同，Java开发者不需要自己编写代码实现垃圾回收。本文主要通过几个方面来探索Java垃圾回收  什么时候需要垃圾回收 垃圾回收算法有哪些 垃圾回收器如何工作">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://onelee85.github.io/images/jvm/jvm_heap.jpg">
+<meta property="og:updated_time" content="2018-03-01T08:48:23.213Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java垃圾回收探究">
+<meta name="twitter:description" content="介绍Java的内存分配与回收全部由JVM垃圾回收进程自动完成。与C语言不同，Java开发者不需要自己编写代码实现垃圾回收。本文主要通过几个方面来探索Java垃圾回收  什么时候需要垃圾回收 垃圾回收算法有哪些 垃圾回收器如何工作">
+<meta name="twitter:image" content="https://onelee85.github.io/images/jvm/jvm_heap.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: undefined,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> Java垃圾回收探究 | James's 烂笔头 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?6783c3663ad3a4aee432726abc0999c9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">James's 烂笔头</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">好记心不如烂笔头</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Java垃圾回收探究
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2013-06-01T14:09:00+08:00" content="2013-06-01">
+              2013-06-01
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/language/" itemprop="url" rel="index">
+                    <span itemprop="name">语言</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>Java的内存分配与回收全部由JVM垃圾回收进程自动完成。与C语言不同，Java开发者不需要自己编写代码实现垃圾回收。本文主要通过几个方面来探索Java垃圾回收</p>
+<ol>
+<li>什么时候需要垃圾回收</li>
+<li>垃圾回收算法有哪些</li>
+<li>垃圾回收器如何工作</li>
+</ol>
+<a id="more"></a>
+<h1 id="内存的分配"><a href="#内存的分配" class="headerlink" title="内存的分配"></a>内存的分配</h1><p>根据分析<a href="/language/jvm_memory/">JVM内存</a>我们得知<strong>堆</strong>内存是主要用来保存运行时的对象实例,所以我们主要关注点就集中在堆内存。</p>
+<p>J在JVM的堆内存空间中分为年老代和年轻代。将大量（据统计差不多90%以上）创建了没多久就会消亡的对象存储在年轻代，而年老代中存放生命周期长久的实例对象。</p>
+<p><img src="/images/jvm/jvm_heap.jpg" alt="heap"></p>
+<p>1.新生代（Young Generation）</p>
+<p>2.老年代（Old Generation）实例将从S1提升到Tenured（终身代）</p>
+<p>3.久代（Permanent Generation）包含类、方法等细节的元信息</p>
+<h1 id="垃圾回收的条件"><a href="#垃圾回收的条件" class="headerlink" title="垃圾回收的条件"></a>垃圾回收的条件</h1><p>如何判定对象是否存活的？</p>
+<h2 id="根搜索算法"><a href="#根搜索算法" class="headerlink" title="根搜索算法"></a>根搜索算法</h2><p>思路: 通过一系列的名为<code>GC Roots</code>的对象作为起始点，从这些节点开始向下搜索，搜索所走过的路径称为引用链，当一个对象到<code>GC Roots</code>没有任何引用链相连时，则证明此对象是不可用的。</p>
+<p><code>GC Roots</code> 的对象包括下面几种:</p>
+<ol>
+<li>虚拟机栈（栈帧中的本地变量表）中的引用的对象。</li>
+<li>方法区中的类静态属性引用的对象。</li>
+<li>方法区中的常量引用的对象。</li>
+<li>本地方法栈中JNI（Native方法）的引用的对象。</li>
+</ol>
+<h1 id="回收算法"><a href="#回收算法" class="headerlink" title="回收算法"></a>回收算法</h1><h2 id="引用计数法"><a href="#引用计数法" class="headerlink" title="引用计数法"></a>引用计数法</h2><p>引用计数是垃圾收集器中的早期策略。在这种方法中，堆中每个对象实例都有一个引用计数。当一个对象被创建时，且将该对象实例分配给一个变量，该变量计数设置为1。当任何其它变量被赋值为这个对象的引用时，计数加1（a = b,则b引用的对象实例的计数器+1），但当一个对象实例的某个引用超过了生命周期或者被设置为一个新值时，对象实例的引用计数器减1。任何引用计数器为0的对象实例可以被当作垃圾收集。当一个对象实例被垃圾收集时，它引用的任何对象实例的引用计数器减1。<strong>缺点</strong>是无法检测出循环引用。如父对象有一个对子对象的引用，子对象反过来引用父对象。这样，他们的引用计数永远不可能为0.</p>
+<h2 id="标记-清除算法"><a href="#标记-清除算法" class="headerlink" title="标记-清除算法"></a>标记-清除算法</h2><p>标记-清除算法采用从根集合进行扫描，对存活的对象对象标记，标记完毕后，再扫描整个空间中未被标记的对象进行回收。此算法不需要进行对象的移动，并且仅对不存活的对象进行处理，在存活对象比较多的情况下极为高效，但由于标记-清除算法直接回收不存活的对象，因此会造成内存碎片。</p>
+<h2 id="标记-整理算法"><a href="#标记-整理算法" class="headerlink" title="标记-整理算法"></a>标记-整理算法</h2><p>标记-整理算法采用标记-清除算法一样的方式进行对象的标记，但在清除时不同，在回收不存活的对象占用的空间后，会将所有的存活对象往空闲空间移动，并更新对应的指针。标记-整理算法是在标记-清除算法的基础上，又进行了对象的移动，因此成本更高，但是却解决了内存碎片的问题。</p>
+<h2 id="复制算法"><a href="#复制算法" class="headerlink" title="复制算法"></a>复制算法</h2><p>该算法的提出是为了克服句柄的开销和解决堆碎片的垃圾回收。它开始时把堆分成 一个对象 面和多个空闲面， 程序从对象面为对象分配空间，当对象满了，基于copying算法的垃圾 收集就从根集中扫描活动对象，并将每个 活动对象复制到空闲面(使得活动对象所占的内存之间没有空闲洞)，这样空闲面变成了对象面，原来的对象面变成了空闲面，程序会在新的对象面中分配内存。</p>
+<h1 id="回收策略"><a href="#回收策略" class="headerlink" title="回收策略"></a>回收策略</h1><p>在JVM中<strong>不同的对象的生命周期是不一样的</strong>。因此，不同生命周期的对象可以采取不同的回收算法，以便提高回收效率。</p>
+<h2 id="年轻代（Young-Generation）-复制算法"><a href="#年轻代（Young-Generation）-复制算法" class="headerlink" title="年轻代（Young Generation） 复制算法"></a><strong>年轻代（Young Generation）</strong> 复制算法</h2><ol>
+<li>所有新生成的对象首先都是放在年轻代的。年轻代的目标就是尽可能快速的收集掉那些生命周期短的对象。</li>
+<li>新生代内存按照8:1:1的比例分为一个eden区和两个survivor(survivor0,survivor1)区。大部分对象在Eden区中生成。回收时先将eden区存活对象复制到一个survivor0区，然后清空eden区，当这个survivor0区也存放满了时，则将eden区和survivor0区存活对象复制到另一个survivor1区，然后清空eden和这个survivor0区，此时survivor0区是空的，然后将survivor0区和survivor1区交换，即保持survivor1区为空， 如此往复。</li>
+<li>当survivor1区不足以存放 eden和survivor0的存活对象时，就将存活对象直接存放到老年代。若是老年代也满了就会触发一次Full GC，也就是新生代、老年代都进行回收。</li>
+<li>新生代发生的GC也叫做Minor GC，MinorGC发生频率比较高(不一定等Eden区满了才触发)。</li>
+</ol>
+<h2 id="年老代（Old-Generation）标记-整理算法"><a href="#年老代（Old-Generation）标记-整理算法" class="headerlink" title="年老代（Old Generation）标记-整理算法"></a><strong>年老代（Old Generation）</strong>标记-整理算法</h2><ol>
+<li>在年轻代中经历了N次垃圾回收后仍然存活的对象(<code>MaxTenuringThreshold</code>控制进入老年前生存次数)，会被放到年老代中。因此，可以认为年老代中存放的都是一些生命周期较长的对象。</li>
+<li>年老代内存比新生代大很多(大概比例是1:2)，当老年代内存满时触发Major GC即Full GC，Full GC发生频率比较低，老年代对象存活时间比较长，存活率标记高。</li>
+</ol>
+<h2 id="持久代（Permanent-Generation）"><a href="#持久代（Permanent-Generation）" class="headerlink" title="持久代（Permanent Generation）"></a><strong>持久代（Permanent Generation）</strong></h2><p>​    用于存放静态文件，如Java类、方法等。持久代对垃圾回收没有显著影响，但是有些应用可能动态生成或者调用一些class，例如Hibernate 等，在这种时候需要设置一个比较大的持久代空间来存放这些运行过程中新增的类。</p>
+<h1 id="垃圾收集器"><a href="#垃圾收集器" class="headerlink" title="垃圾收集器"></a>垃圾收集器</h1><p>新生代收集器使用的收集器：Serial、PraNew、Parallel Scavenge</p>
+<p>老年代收集器使用的收集器：Serial Old、Parallel Old、CMS</p>
+<h2 id="Serial收集器（复制算法"><a href="#Serial收集器（复制算法" class="headerlink" title="Serial收集器（复制算法)"></a><strong>Serial收集器（复制算法)</strong></h2><p>新生代单线程收集器，标记和清理都是单线程，优点是简单高效。</p>
+<h2 id="Serial-Old收集器-标记-整理算法"><a href="#Serial-Old收集器-标记-整理算法" class="headerlink" title="Serial Old收集器(标记-整理算法)"></a><strong>Serial Old收集器(标记-整理算法)</strong></h2><p>老年代单线程收集器，Serial收集器的老年代版本。</p>
+<h2 id="ParNew收集器-停止-复制算法"><a href="#ParNew收集器-停止-复制算法" class="headerlink" title="ParNew收集器(停止-复制算法)　"></a><strong>ParNew收集器(停止-复制算法)　</strong></h2><p>新生代收集器，可以认为是Serial收集器的多线程版本,在多核CPU环境下有着比Serial更好的表现。</p>
+<h2 id="Parallel-Scavenge收集器-停止-复制算法"><a href="#Parallel-Scavenge收集器-停止-复制算法" class="headerlink" title="Parallel Scavenge收集器(停止-复制算法)"></a><strong>Parallel Scavenge收集器(停止-复制算法)</strong></h2><p>并行收集器，追求高吞吐量，高效利用CPU。吞吐量一般为99%， 吞吐量= 用户线程时间/(用户线程时间+GC线程时间)。适合后台应用等对交互相应要求不高的场景。</p>
+<h2 id="Parallel-Old收集器-停止-复制算法"><a href="#Parallel-Old收集器-停止-复制算法" class="headerlink" title="Parallel Old收集器(停止-复制算法)"></a><strong>Parallel Old收集器(停止-复制算法)</strong></h2><p>Parallel Scavenge收集器的老年代版本，并行收集器，吞吐量优先</p>
+<h2 id="CMS-Concurrent-Mark-Sweep-收集器（标记-清理算法）"><a href="#CMS-Concurrent-Mark-Sweep-收集器（标记-清理算法）" class="headerlink" title="CMS(Concurrent Mark Sweep)收集器（标记-清理算法）"></a><strong>CMS(Concurrent Mark Sweep)收集器（标记-清理算法）</strong></h2><p>高并发、低停顿，追求最短GC回收停顿时间，cpu占用比较高，响应时间快，停顿时间短，多核cpu 追求高响应时间的选择</p>
+<h2 id="G1垃圾回收器"><a href="#G1垃圾回收器" class="headerlink" title="G1垃圾回收器"></a>G1垃圾回收器</h2><p>G1垃圾回收器适用于堆内存很大的情况，他将堆内存分割成不同的区域，并且并发的对其进行垃圾回收。G1也可以在回收内存之后对剩余的堆内存空间进行压缩。并发扫描标记垃圾回收器在STW情况下压缩内存。G1垃圾回收会优先选择第一块垃圾最多的区域</p>
+<p>通过JVM参数 <code>–XX:+UseG1GC</code> 使用G1垃圾回收器</p>
+<h1 id="常用JVM参数配置"><a href="#常用JVM参数配置" class="headerlink" title="常用JVM参数配置"></a>常用JVM参数配置</h1><ul>
+<li><strong>-Xmn</strong>设置Young的空间大小</li>
+<li><strong>-XX:NewRatio= 3</strong> 为Tenured:Young的初始尺寸比例（设置了大小就不再设置此值），此时Young占用整个HeapSize的1/4大小</li>
+<li><strong>-XX:SurvivorRatio= 6</strong>：为Eden:Survivor比例大小，此时一个Survivor占用Young的1/8大小，而Eden占用3/4大小。</li>
+<li><strong>-XX:MaxTenuringThreshold=3</strong>：一般一个对象在Young经过多少次GC后会被移动到OLD区。</li>
+<li><strong>-XX:+UseParNewGC</strong>：对Yong区域启用并行回收算法。</li>
+<li><strong>-XX:+UseConcMarkSweepGC</strong> 启动并发GC，一般针对Tenured区域。</li>
+</ul>
+<h1 id="实战问题"><a href="#实战问题" class="headerlink" title="实战问题"></a>实战问题</h1><p>常见的OOM现象有以下几种：</p>
+<ol>
+<li><p>heapSize溢出：<strong>java.lang.OutOfMemoryError：</strong>java heap space</p>
+<p>这个需要设置Java虚拟机的内存情况</p>
+</li>
+<li><p>PermSize溢出：<strong>java.lang.OutOfMemoryError：</strong>PermGen space</p>
+<p>需要设置Perm相关参数以及检查内存中的常量情况，jdk1.7中的常量池移到了堆中。</p>
+</li>
+<li><p>栈内存溢出错误：<strong>StackOverflowError</strong></p>
+<p>通常都是程序的问题，JVM对栈帧的大小设置已经很大了，比如递归</p>
+</li>
+<li><p>native Thread溢出，注意线程Stack的大小，以及本身操作系统的限制。</p>
+</li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java/" rel="tag">#Java</a>
+          
+            <a href="/tags/GC/" rel="tag">#GC</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/language/jvm_memory/" rel="next" title="JVM内存分析">
+                <i class="fa fa-chevron-left"></i> JVM内存分析
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/language/arraylist/" rel="prev" title="ArrayList源码学习">
+                ArrayList源码学习 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="James" />
+          <p class="site-author-name" itemprop="name">James</p>
+          <p class="site-description motion-element" itemprop="description">好记心不如烂笔头</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">30</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/onelee85" target="_blank" title="Github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Github
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#介绍"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#内存的分配"><span class="nav-number">2.</span> <span class="nav-text">内存的分配</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#垃圾回收的条件"><span class="nav-number">3.</span> <span class="nav-text">垃圾回收的条件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#根搜索算法"><span class="nav-number">3.1.</span> <span class="nav-text">根搜索算法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#回收算法"><span class="nav-number">4.</span> <span class="nav-text">回收算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#引用计数法"><span class="nav-number">4.1.</span> <span class="nav-text">引用计数法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#标记-清除算法"><span class="nav-number">4.2.</span> <span class="nav-text">标记-清除算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#标记-整理算法"><span class="nav-number">4.3.</span> <span class="nav-text">标记-整理算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#复制算法"><span class="nav-number">4.4.</span> <span class="nav-text">复制算法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#回收策略"><span class="nav-number">5.</span> <span class="nav-text">回收策略</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#年轻代（Young-Generation）-复制算法"><span class="nav-number">5.1.</span> <span class="nav-text">年轻代（Young Generation） 复制算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#年老代（Old-Generation）标记-整理算法"><span class="nav-number">5.2.</span> <span class="nav-text">年老代（Old Generation）标记-整理算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#持久代（Permanent-Generation）"><span class="nav-number">5.3.</span> <span class="nav-text">持久代（Permanent Generation）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#垃圾收集器"><span class="nav-number">6.</span> <span class="nav-text">垃圾收集器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Serial收集器（复制算法"><span class="nav-number">6.1.</span> <span class="nav-text">Serial收集器（复制算法)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Serial-Old收集器-标记-整理算法"><span class="nav-number">6.2.</span> <span class="nav-text">Serial Old收集器(标记-整理算法)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ParNew收集器-停止-复制算法"><span class="nav-number">6.3.</span> <span class="nav-text">ParNew收集器(停止-复制算法)　</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Parallel-Scavenge收集器-停止-复制算法"><span class="nav-number">6.4.</span> <span class="nav-text">Parallel Scavenge收集器(停止-复制算法)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Parallel-Old收集器-停止-复制算法"><span class="nav-number">6.5.</span> <span class="nav-text">Parallel Old收集器(停止-复制算法)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CMS-Concurrent-Mark-Sweep-收集器（标记-清理算法）"><span class="nav-number">6.6.</span> <span class="nav-text">CMS(Concurrent Mark Sweep)收集器（标记-清理算法）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#G1垃圾回收器"><span class="nav-number">6.7.</span> <span class="nav-text">G1垃圾回收器</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常用JVM参数配置"><span class="nav-number">7.</span> <span class="nav-text">常用JVM参数配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实战问题"><span class="nav-number">8.</span> <span class="nav-text">实战问题</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">James</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+  
+  
+
+  
+
+  
+
+</body>
+</html>
