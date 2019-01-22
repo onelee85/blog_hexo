@@ -14,7 +14,7 @@ keywords: "James,技术博客"
 rss:
 
 # Specify the date when the site was setup
-#since: 2015
+since: 2015
 
 
 
@@ -236,7 +236,7 @@ mathjax:
 #swiftype_key:
 
 # Baidu Analytics ID
-#baidu_analytics:
+baidu_analytics: 6783c3663ad3a4aee432726abc0999c9
 
 # Duoshuo ShortName
 #duoshuo_shortname:
@@ -277,7 +277,6 @@ duoshuo_info:
   admin_enable: false
   user_id: 3109763
   admin_nickname: Charles0429
-
 
 # Facebook SDK Support.
 # https://github.com/iissnan/hexo-theme-next/pull/410
@@ -325,7 +324,7 @@ busuanzi_count:
 # tencent_analytics:
 
 # Enable baidu push so that the blog will push the url to baidu automatically which is very helpful for SEO
-baidu_push: false
+baidu_push: true
 
 
 
