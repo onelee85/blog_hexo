@@ -4,7 +4,7 @@ tags:
   - synchronized
   - lock
 categories:
-  - 语言
+  - 并发
 date: 2013-07-01 11:30:00
 ---
 
