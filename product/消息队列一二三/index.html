@@ -92,7 +92,7 @@
 <meta property="og:site_name" content="James&#39;s 烂笔头">
 <meta property="og:description" content="简介消息队列作为服务/应用之间的通信中间件，可以起到业务耦合、广播消息、保证最终一致性以及错峰流控（克服短板瓶颈）等作用。自己公司线上运行着2个消息中间件：1.RabbitMQ，用于应用服务 2.Kafka，用与大数据数据上报和日志采集。既然使用了就不能只其然而不知其所以然， 故而好好研究消息队列，聊一聊自己的总结。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-26T09:49:15.745Z">
+<meta property="og:updated_time" content="2019-04-29T07:12:22.817Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="聊聊消息队列">
 <meta name="twitter:description" content="简介消息队列作为服务/应用之间的通信中间件，可以起到业务耦合、广播消息、保证最终一致性以及错峰流控（克服短板瓶颈）等作用。自己公司线上运行着2个消息中间件：1.RabbitMQ，用于应用服务 2.Kafka，用与大数据数据上报和日志采集。既然使用了就不能只其然而不知其所以然， 故而好好研究消息队列，聊一聊自己的总结。">
@@ -355,13 +355,10 @@
 <h2 id="可靠投递"><a href="#可靠投递" class="headerlink" title="可靠投递"></a>可靠投递</h2><p>对于producer，从API和I/O层面可使用同步、异步，对于吞吐层面可使用单条、批量。fire-and-forget模式，类似UDP，尽管发送即可。针对可能发生的错误，例如连接broker失败，RPC超时、发布消息失败、发布后无响应，可选择忽略或者重发，所以往往重复投递的情况不可避免。</p>
 <p>对于broker，如果要保证数据100%不丢，是可能的，但是需要牺牲下性能和吞吐，使用同步多写、多副本策略+同步刷盘持久化消息，可以严格保证不丢。另外，broker对于写入消息的payload，也会做完整性校验，例如CRC等。</p>
 <h2 id="消费可靠性"><a href="#消费可靠性" class="headerlink" title="消费可靠性"></a>消费可靠性</h2><p><strong>消费次数</strong>: 包括at most once、at least once、exactly  once，其中前两个比较好做到，最后的exactly once需要streaming  consumer系统和broker端协作完成，例如storm的trident和flink。<br><strong>推拉模式</strong>: push or pull。推模式最小化投递延迟，但是没有考虑consumer的承载能力，拉一般是轮询接收broker的数据，按照consumer自己的能力消费。<br><strong>消费记录点</strong>: 一般每个消息都有一个offset、ID或者时间戳，consumer可以按照这个offset来进行定点消费以及消息重放。<br><strong>消息确认</strong>: consumer消费完成ACK回调broker或者集群高可用中间件（zk）通知消费进度。<br><strong>错误处理</strong>:对于消费失败的情况，可以回复NACK，要求重发/requeue消息，当错误超多一定阈值时候，放到死信队列中。<br><strong>消息重复消费</strong>: 这和消费次数有关系，consumer在某些时候需要做到幂等性，保证重复消费不会引起业务异常。</p>
-<h1 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h1><h2 id="消息的幂等性"><a href="#消息的幂等性" class="headerlink" title="消息的幂等性"></a>消息的幂等性</h2><p>产生原因:网络延迟传输中，或者消费出现异常或者是消费延迟，会造成进行MQ重试进行重试补偿机制，在重试过程中，可能会造成重复消费。<br>解决办法:<br>其实无论是哪一种消息队列，造成重复消费原因其实都是类似的。正常情况下，消费者在消费消息时候，消费完毕后，会发送一个确认信息给消息队列，消息队列就知道该消息被消费了，就会将该消息从消息队列中删除。只是不同的消息队列发送的确认信息形式不同,例如RabbitMQ是发送一个ACK确认消息，RocketMQ是返回一个CONSUME_SUCCESS成功标志，kafka实际上有个offset的概念,每一个消息都有一个offset，kafka消费过消息后，需要提交offset，让消息队列知道自己已经消费过了。</p>
+<h1 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h1><h2 id="消息的幂等性"><a href="#消息的幂等性" class="headerlink" title="消息的幂等性"></a>消息的幂等性</h2><p>产生原因:网络延迟传输中，或者消费出现异常或者是消费延迟，会造成进行MQ重试进行重试补偿机制，在重试过程中，可能会造成重复消费。<br><em>解决办法:</em><br>其实无论是哪一种消息队列，造成重复消费原因其实都是类似的。正常情况下，消费者在消费消息时候，消费完毕后，会发送一个确认信息给消息队列，消息队列就知道该消息被消费了，就会将该消息从消息队列中删除。只是不同的消息队列发送的确认信息形式不同,例如RabbitMQ是发送一个ACK确认消息，RocketMQ是返回一个CONSUME_SUCCESS成功标志，kafka实际上有个offset的概念,每一个消息都有一个offset，kafka消费过消息后，需要提交offset，让消息队列知道自己已经消费过了。</p>
 <h2 id="消息的重发补偿"><a href="#消息的重发补偿" class="headerlink" title="消息的重发补偿"></a>消息的重发补偿</h2><p>  为了保证数据不被丢失，RabbitMQ支持消息确认机制，即acknowledgments。为了保证数据能被正确处理而不仅仅是被Consumer收到，那么我们不能采用no-ack。而应该是在处理完数据后发送ack。 在处理数据后发送的ack，就是告诉RabbitMQ数据已经被接收，处理完成，RabbitMQ可以去安全的删除它了。</p>
-<h2 id="消息的有序性"><a href="#消息的有序性" class="headerlink" title="消息的有序性"></a>消息的有序性</h2><p>rabbitmq本身是没有绝对的消息顺序机制的，单个queue在多消费者下不能保证其先后顺序。  另外ack的机制会触发消息重复消费的，需要我们在设计上避免该问题。如果对于消息顺序敏感，那么我们这里给出的方法是 </p>
-<p>消息体通过hash分派到队列里，每个队列对应一个消费者，多分拆队列。  同一组的任务会被分配到同一个队列里，每个队列只能有一个worker来消费，这样避免了同一个队列多个消费者消费时，乱序的可能！ t1, t2 两个任务， t1 虽然被c1先pop了，但是有可能c2先把 t2 任务给完成了。 主动去分配队列，单个消费者。 </p>
-<h2 id="消息的堆积"><a href="#消息的堆积" class="headerlink" title="消息的堆积"></a>消息的堆积</h2><p>在实际应用场景中什么情况下消息发送的速率远远大于消息消费的速率，比如某个时间段消费端处理消息异常缓慢（发送消息只要3秒钟，而消费消息需要1分钟左右才能处理一个消息，每分钟发送20个消息，只能有一个消息被消费端处理，这样队列中就会产生大量的消息堆积）.</p>
-<p>当消费端处理缓慢造成的消息堆积就可以通过设置并发消费提高消费的速率，从而减少消息堆积的问题。</p>
-<p>设置并发消费两个关键属性concurrentConsumers和prefetchCount.</p>
+<h2 id="消息的有序性"><a href="#消息的有序性" class="headerlink" title="消息的有序性"></a>消息的有序性</h2><p>rabbitmq本身是没有绝对的消息顺序机制的，单个queue在多消费者下不能保证其先后顺序。  另外ack的机制会触发消息重复消费的，需要我们在设计上避免该问题。如果对于消息顺序敏感，那么我们这里给出的方法是 消息体通过hash分派到队列里，每个队列对应一个消费者，多分拆队列。  同一组的任务会被分配到同一个队列里，每个队列只能有一个worker来消费，这样避免了同一个队列多个消费者消费时，乱序的可能！ t1, t2 两个任务， t1 虽然被c1先pop了，但是有可能c2先把 t2 任务给完成了。 主动去分配队列，单个消费者。 </p>
+<h2 id="消息的堆积"><a href="#消息的堆积" class="headerlink" title="消息的堆积"></a>消息的堆积</h2><p>在实际应用场景中什么情况下消息发送的速率远远大于消息消费的速率，比如某个时间段消费端处理消息异常缓慢（发送消息只要3秒钟，而消费消息需要1分钟左右才能处理一个消息，每分钟发送20个消息，只能有一个消息被消费端处理，这样队列中就会产生大量的消息堆积）。<br>当消费端处理缓慢造成的消息堆积就可以通过设置并发消费提高消费的速率，从而减少消息堆积的问题。<br>设置并发消费两个关键属性concurrentConsumers和prefetchCount。</p>
 
       
     </div>
