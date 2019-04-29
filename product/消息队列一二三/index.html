@@ -1,0 +1,666 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.lug.ustc.edu.cn/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="消息队列," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="简介消息队列作为服务/应用之间的通信中间件，可以起到业务耦合、广播消息、保证最终一致性以及错峰流控（克服短板瓶颈）等作用。自己公司线上运行着2个消息中间件：1.RabbitMQ，用于应用服务 2.Kafka，用与大数据数据上报和日志采集。既然使用了就不能只其然而不知其所以然， 故而好好研究消息队列，聊一聊自己的总结。">
+<meta name="keywords" content="消息队列">
+<meta property="og:type" content="article">
+<meta property="og:title" content="聊聊消息队列">
+<meta property="og:url" content="https://onelee85.github.io/product/消息队列一二三/index.html">
+<meta property="og:site_name" content="James&#39;s 烂笔头">
+<meta property="og:description" content="简介消息队列作为服务/应用之间的通信中间件，可以起到业务耦合、广播消息、保证最终一致性以及错峰流控（克服短板瓶颈）等作用。自己公司线上运行着2个消息中间件：1.RabbitMQ，用于应用服务 2.Kafka，用与大数据数据上报和日志采集。既然使用了就不能只其然而不知其所以然， 故而好好研究消息队列，聊一聊自己的总结。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-04-26T09:49:15.745Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="聊聊消息队列">
+<meta name="twitter:description" content="简介消息队列作为服务/应用之间的通信中间件，可以起到业务耦合、广播消息、保证最终一致性以及错峰流控（克服短板瓶颈）等作用。自己公司线上运行着2个消息中间件：1.RabbitMQ，用于应用服务 2.Kafka，用与大数据数据上报和日志采集。既然使用了就不能只其然而不知其所以然， 故而好好研究消息队列，聊一聊自己的总结。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 3109763,
+      author: 'Charles0429'
+    }
+  };
+</script>
+
+  <title> 聊聊消息队列 | James's 烂笔头 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?6783c3663ad3a4aee432726abc0999c9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">James's 烂笔头</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">好记心不如烂笔头</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                聊聊消息队列
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2019-04-22T10:51:00+08:00" content="2019-04-22">
+              2019-04-22
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/product/" itemprop="url" rel="index">
+                    <span itemprop="name">实战</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>消息队列作为服务/应用之间的通信中间件，可以起到业务耦合、广播消息、保证最终一致性以及错峰流控（克服短板瓶颈）等作用。<br>自己公司线上运行着2个消息中间件：1.<em>RabbitMQ</em>，用于应用服务 2.<em>Kafka</em>，用与大数据数据上报和日志采集。既然使用了就不能只其然而不知其所以然， 故而好好研究消息队列，聊一聊自己的总结。</p>
+<a id="more"></a>
+<h1 id="消息队列的使用场景"><a href="#消息队列的使用场景" class="headerlink" title="消息队列的使用场景"></a>消息队列的使用场景</h1><h2 id="异步处理"><a href="#异步处理" class="headerlink" title="异步处理"></a>异步处理</h2><p><strong>场景:</strong><br>​    我们是直播平台，用户送礼是最频繁的事情，用户在送完礼物后会触发一系列的后续动作。例如：排行榜计算、主播分成计算、徽章升级等等。<br>相应的传统做法：</p>
+<ol>
+<li>串行处理：所有的业务处理都在统一个服务内处理完。 </li>
+<li>并行处理：用户送礼完成后，同时并行计算排行榜、主播分成计算，用户徽章升级等等。<br>假设三个业务节点每个使用10毫秒钟，不考虑网络等其他开销，则串行方式的时间是30毫秒，并行的时间可能是20毫秒。</li>
+</ol>
+<p><strong>引入消息队列</strong>：三个应用处理逻辑都异步处理，处理时间大约是在10毫秒内。</p>
+<h2 id="解耦"><a href="#解耦" class="headerlink" title="解耦"></a>解耦</h2><p><strong>场景：</strong><br>系统间耦合性太强，如系统A在代码中直接调用系统B和系统C的代码，如果将来D系统接入，系统A还需要修改代码，耦合性太强。将消息写入消息队列，需要消息的系统自己从消息队列中订阅，从而系统A不需要做任何修改。</p>
+<h2 id="流量削锋"><a href="#流量削锋" class="headerlink" title="流量削锋"></a>流量削锋</h2><p><strong>场景：</strong><br>直播冲榜活动：经常发生秒榜的行为，用户经常在活动截止的最后时刻同时送礼冲榜，导致流量爆炸，应用服务可能随时挂掉； 为了解决这个问题，引入了消息队列。用户的请求服务器接收后，首先写入消息队列，如果消息队列请求数达到和阈值，则直接抛弃用户的请求。</p>
+<h2 id="消息通讯"><a href="#消息通讯" class="headerlink" title="消息通讯"></a>消息通讯</h2><p><strong>场景：</strong><br>用户送礼：在用户送完礼好，需要通知直播间播放礼物，或者显示用户姓名。客户端socket订阅送礼的主题， 用户送完礼物后接口服务push消息到这个主题内。 消息队列一般都内置了高效的通信机制，因此也可以用在纯的消息通讯。比如实现点对点消息队列，或者聊天室等。</p>
+<h2 id="日志处理"><a href="#日志处理" class="headerlink" title="日志处理"></a>日志处理</h2><p><strong>场景：</strong><br>我们的大数据用户行为数据上报：</p>
+<ul>
+<li>日志采集客户端，负责日志数据采集，定时写受写入Kafka队列</li>
+<li>Kafka消息队列，负责日志数据的接收，存储和转发</li>
+<li>日志处理应用：订阅并消费kafka队列中的日志数据</li>
+</ul>
+<h2 id="分布式事务"><a href="#分布式事务" class="headerlink" title="分布式事务"></a>分布式事务</h2><p><strong>场景</strong>：<br>由于应用服务部署在不同的机器上，数据库也进行了拆分，所以会面临着分布式事务问题。如：用户送礼后调用主播成就计算服务。<br>可以通过消息补偿的分布式事务方案往往用在高并发场景下，将一个分布式事务拆成一个消息事务（A系统的本地操作+发消息）+B系统的本地操作，其中B系统的操作由消息驱动，只要消息事务成功，那么A操作一定成功，消息也一定发出来了，这时候B会收到消息去执行本地操作，如果本地操作失败，消息会重投，直到B操作成功，这样就变相地实现了A与B的分布式事务。</p>
+<h1 id="消息队列相关技术点梳理"><a href="#消息队列相关技术点梳理" class="headerlink" title="消息队列相关技术点梳理"></a>消息队列相关技术点梳理</h1><h2 id="基本架构"><a href="#基本架构" class="headerlink" title="基本架构"></a>基本架构</h2><p>一般为：<em>producer，broker，consumer</em></p>
+<h2 id="高可用"><a href="#高可用" class="headerlink" title="高可用"></a>高可用</h2><p><strong>集群高可用</strong>：producer通过broker投递消息，所以必然有且仅有一个broker主负责“写”，选主策略分为自动选主和非主动选择，自动选主使用分布一致性组件完成，例如Kafka使用zookeeper，非自动选主。</p>
+<p><strong>数据高可用</strong>：针对broker持久化积压消息场景。可借助分布式存储完成，但是往往性能上是个短板，所以大多数主流产品都进行本地IO顺序写，进行主从备份，多副本拷贝保证可用性。</p>
+<h2 id="协议"><a href="#协议" class="headerlink" title="协议"></a>协议</h2><p>producer、consumer和broker通信的协议，包括AMQP、STOMP、MQTT、HTTP、OpenWire（ActiveMQ）、XMPP、自定义等等。</p>
+<p>AMQP是比较全面和复杂的一个协议，包括协议本身以及模型（broker、exchange、routing  key等概念），目前RabbitMQ是AMQP消息队列最有名的开源实现，有非常多语言已经支持基于AMQP协议与消息队列通信，同时还可以通过插件支持STOMP、MQTT等协议接入。Kafka、RocketMQ均使用自定义的协议。</p>
+<h2 id="消费关系"><a href="#消费关系" class="headerlink" title="消费关系"></a>消费关系</h2><ol>
+<li>点对点，也就是P2P，FIFO的队列，可以看做单播。</li>
+<li>Topic模式，Pub/Sub发布订阅。</li>
+<li>fanout广播模式。</li>
+</ol>
+<h2 id="消息堆积能力"><a href="#消息堆积能力" class="headerlink" title="消息堆积能力"></a>消息堆积能力</h2><p>持久化消息，如果存储在本地磁盘，可以使用同步刷盘和异步刷盘两种策略。磁盘不能无限堆积，会有清理策略，例如Kafka、RocketMQ都按照时间、数据量进行retention。</p>
+<p>非持久化，仅放在内存，消费者处理完可选择删除掉。</p>
+<h2 id="可靠投递"><a href="#可靠投递" class="headerlink" title="可靠投递"></a>可靠投递</h2><p>对于producer，从API和I/O层面可使用同步、异步，对于吞吐层面可使用单条、批量。fire-and-forget模式，类似UDP，尽管发送即可。针对可能发生的错误，例如连接broker失败，RPC超时、发布消息失败、发布后无响应，可选择忽略或者重发，所以往往重复投递的情况不可避免。</p>
+<p>对于broker，如果要保证数据100%不丢，是可能的，但是需要牺牲下性能和吞吐，使用同步多写、多副本策略+同步刷盘持久化消息，可以严格保证不丢。另外，broker对于写入消息的payload，也会做完整性校验，例如CRC等。</p>
+<h2 id="消费可靠性"><a href="#消费可靠性" class="headerlink" title="消费可靠性"></a>消费可靠性</h2><p><strong>消费次数</strong>: 包括at most once、at least once、exactly  once，其中前两个比较好做到，最后的exactly once需要streaming  consumer系统和broker端协作完成，例如storm的trident和flink。<br><strong>推拉模式</strong>: push or pull。推模式最小化投递延迟，但是没有考虑consumer的承载能力，拉一般是轮询接收broker的数据，按照consumer自己的能力消费。<br><strong>消费记录点</strong>: 一般每个消息都有一个offset、ID或者时间戳，consumer可以按照这个offset来进行定点消费以及消息重放。<br><strong>消息确认</strong>: consumer消费完成ACK回调broker或者集群高可用中间件（zk）通知消费进度。<br><strong>错误处理</strong>:对于消费失败的情况，可以回复NACK，要求重发/requeue消息，当错误超多一定阈值时候，放到死信队列中。<br><strong>消息重复消费</strong>: 这和消费次数有关系，consumer在某些时候需要做到幂等性，保证重复消费不会引起业务异常。</p>
+<h1 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h1><h2 id="消息的幂等性"><a href="#消息的幂等性" class="headerlink" title="消息的幂等性"></a>消息的幂等性</h2><p>产生原因:网络延迟传输中，或者消费出现异常或者是消费延迟，会造成进行MQ重试进行重试补偿机制，在重试过程中，可能会造成重复消费。<br>解决办法:<br>其实无论是哪一种消息队列，造成重复消费原因其实都是类似的。正常情况下，消费者在消费消息时候，消费完毕后，会发送一个确认信息给消息队列，消息队列就知道该消息被消费了，就会将该消息从消息队列中删除。只是不同的消息队列发送的确认信息形式不同,例如RabbitMQ是发送一个ACK确认消息，RocketMQ是返回一个CONSUME_SUCCESS成功标志，kafka实际上有个offset的概念,每一个消息都有一个offset，kafka消费过消息后，需要提交offset，让消息队列知道自己已经消费过了。</p>
+<h2 id="消息的重发补偿"><a href="#消息的重发补偿" class="headerlink" title="消息的重发补偿"></a>消息的重发补偿</h2><p>  为了保证数据不被丢失，RabbitMQ支持消息确认机制，即acknowledgments。为了保证数据能被正确处理而不仅仅是被Consumer收到，那么我们不能采用no-ack。而应该是在处理完数据后发送ack。 在处理数据后发送的ack，就是告诉RabbitMQ数据已经被接收，处理完成，RabbitMQ可以去安全的删除它了。</p>
+<h2 id="消息的有序性"><a href="#消息的有序性" class="headerlink" title="消息的有序性"></a>消息的有序性</h2><p>rabbitmq本身是没有绝对的消息顺序机制的，单个queue在多消费者下不能保证其先后顺序。  另外ack的机制会触发消息重复消费的，需要我们在设计上避免该问题。如果对于消息顺序敏感，那么我们这里给出的方法是 </p>
+<p>消息体通过hash分派到队列里，每个队列对应一个消费者，多分拆队列。  同一组的任务会被分配到同一个队列里，每个队列只能有一个worker来消费，这样避免了同一个队列多个消费者消费时，乱序的可能！ t1, t2 两个任务， t1 虽然被c1先pop了，但是有可能c2先把 t2 任务给完成了。 主动去分配队列，单个消费者。 </p>
+<h2 id="消息的堆积"><a href="#消息的堆积" class="headerlink" title="消息的堆积"></a>消息的堆积</h2><p>在实际应用场景中什么情况下消息发送的速率远远大于消息消费的速率，比如某个时间段消费端处理消息异常缓慢（发送消息只要3秒钟，而消费消息需要1分钟左右才能处理一个消息，每分钟发送20个消息，只能有一个消息被消费端处理，这样队列中就会产生大量的消息堆积）.</p>
+<p>当消费端处理缓慢造成的消息堆积就可以通过设置并发消费提高消费的速率，从而减少消息堆积的问题。</p>
+<p>设置并发消费两个关键属性concurrentConsumers和prefetchCount.</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/消息队列/" rel="tag">#消息队列</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/规划/35岁程序的焦虑思考/" rel="next" title="35岁程序员的焦虑思考">
+                <i class="fa fa-chevron-left"></i> 35岁程序员的焦虑思考
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="James" />
+          <p class="site-author-name" itemprop="name">James</p>
+          <p class="site-description motion-element" itemprop="description">好记心不如烂笔头</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">34</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">39</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/onelee85" target="_blank" title="Github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Github
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#消息队列的使用场景"><span class="nav-number">2.</span> <span class="nav-text">消息队列的使用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#异步处理"><span class="nav-number">2.1.</span> <span class="nav-text">异步处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解耦"><span class="nav-number">2.2.</span> <span class="nav-text">解耦</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#流量削锋"><span class="nav-number">2.3.</span> <span class="nav-text">流量削锋</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消息通讯"><span class="nav-number">2.4.</span> <span class="nav-text">消息通讯</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#日志处理"><span class="nav-number">2.5.</span> <span class="nav-text">日志处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分布式事务"><span class="nav-number">2.6.</span> <span class="nav-text">分布式事务</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#消息队列相关技术点梳理"><span class="nav-number">3.</span> <span class="nav-text">消息队列相关技术点梳理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#基本架构"><span class="nav-number">3.1.</span> <span class="nav-text">基本架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高可用"><span class="nav-number">3.2.</span> <span class="nav-text">高可用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#协议"><span class="nav-number">3.3.</span> <span class="nav-text">协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消费关系"><span class="nav-number">3.4.</span> <span class="nav-text">消费关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消息堆积能力"><span class="nav-number">3.5.</span> <span class="nav-text">消息堆积能力</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可靠投递"><span class="nav-number">3.6.</span> <span class="nav-text">可靠投递</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消费可靠性"><span class="nav-number">3.7.</span> <span class="nav-text">消费可靠性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常见问题"><span class="nav-number">4.</span> <span class="nav-text">常见问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#消息的幂等性"><span class="nav-number">4.1.</span> <span class="nav-text">消息的幂等性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消息的重发补偿"><span class="nav-number">4.2.</span> <span class="nav-text">消息的重发补偿</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消息的有序性"><span class="nav-number">4.3.</span> <span class="nav-text">消息的有序性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消息的堆积"><span class="nav-number">4.4.</span> <span class="nav-text">消息的堆积</span></a></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">James</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+  
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>
