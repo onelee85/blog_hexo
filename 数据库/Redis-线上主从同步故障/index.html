@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="管理,研发," />
+  <meta name="keywords" content="故障,redis ," />
 
 
 
@@ -84,18 +84,18 @@
 
 
 
-<meta name="description" content="在现在的公司工作了快5年了。陪伴着公司从创业初期一直走到现在， 公司业务也从0发展到注册用户5000W+、月流水4000万，年流水5个亿。 研发团队从我一个人的单打独斗扩张到现在几个团队。一路走来，从高级研发到架构师，从架构师到项目总监的转型，临时接手大数据组种种的经历。接下来以个人的经验来总结下技术研发团队的管理心得。">
-<meta name="keywords" content="管理,研发">
+<meta name="description" content="背景：随着公司业务增长数据量也相应的随着一起增长了。由于我司用的缓存数据库是Redis，它的keys也大幅度的增长，内存的消耗也越来越高。近日引发了一个严重的问题，最终虽然及时解决了，没有造成服务宕机以及经济损失。但通过网上搜索发现对此问题的解决方案几乎没有故而想对此次问题的排查过程做一个总结。">
+<meta name="keywords" content="故障,redis ">
 <meta property="og:type" content="article">
-<meta property="og:title" content="研发管理心得整理">
-<meta property="og:url" content="https://onelee85.github.io/管理/dev_manage/index.html">
+<meta property="og:title" content="Redis 线上主从同步故障">
+<meta property="og:url" content="https://onelee85.github.io/数据库/Redis-线上主从同步故障/index.html">
 <meta property="og:site_name" content="James&#39;s 烂笔头">
-<meta property="og:description" content="在现在的公司工作了快5年了。陪伴着公司从创业初期一直走到现在， 公司业务也从0发展到注册用户5000W+、月流水4000万，年流水5个亿。 研发团队从我一个人的单打独斗扩张到现在几个团队。一路走来，从高级研发到架构师，从架构师到项目总监的转型，临时接手大数据组种种的经历。接下来以个人的经验来总结下技术研发团队的管理心得。">
+<meta property="og:description" content="背景：随着公司业务增长数据量也相应的随着一起增长了。由于我司用的缓存数据库是Redis，它的keys也大幅度的增长，内存的消耗也越来越高。近日引发了一个严重的问题，最终虽然及时解决了，没有造成服务宕机以及经济损失。但通过网上搜索发现对此问题的解决方案几乎没有故而想对此次问题的排查过程做一个总结。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-11-28T01:56:24.624Z">
+<meta property="og:updated_time" content="2019-05-17T02:41:26.982Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="研发管理心得整理">
-<meta name="twitter:description" content="在现在的公司工作了快5年了。陪伴着公司从创业初期一直走到现在， 公司业务也从0发展到注册用户5000W+、月流水4000万，年流水5个亿。 研发团队从我一个人的单打独斗扩张到现在几个团队。一路走来，从高级研发到架构师，从架构师到项目总监的转型，临时接手大数据组种种的经历。接下来以个人的经验来总结下技术研发团队的管理心得。">
+<meta name="twitter:title" content="Redis 线上主从同步故障">
+<meta name="twitter:description" content="背景：随着公司业务增长数据量也相应的随着一起增长了。由于我司用的缓存数据库是Redis，它的keys也大幅度的增长，内存的消耗也越来越高。近日引发了一个严重的问题，最终虽然及时解决了，没有造成服务宕机以及经济损失。但通过网上搜索发现对此问题的解决方案几乎没有故而想对此次问题的排查过程做一个总结。">
 
 
 
@@ -113,7 +113,7 @@
   };
 </script>
 
-  <title> 研发管理心得整理 | James's 烂笔头 </title>
+  <title> Redis 线上主从同步故障 | James's 烂笔头 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -263,7 +263,7 @@
             
             
               
-                研发管理心得整理
+                Redis 线上主从同步故障
               
             
           </h1>
@@ -275,8 +275,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2018-10-13T11:37:00+08:00" content="2018-10-13">
-              2018-10-13
+            <time itemprop="dateCreated" datetime="2019-05-15T09:49:00+08:00" content="2019-05-15">
+              2019-05-15
             </time>
           </span>
 
@@ -289,8 +289,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/管理/" itemprop="url" rel="index">
-                    <span itemprop="name">管理</span>
+                  <a href="/categories/数据库/" itemprop="url" rel="index">
+                    <span itemprop="name">数据库</span>
                   </a>
                 </span>
 
@@ -322,47 +322,30 @@
       
 
       
-        <p>在现在的公司工作了快5年了。陪伴着公司从创业初期一直走到现在， 公司业务也从0发展到注册用户5000W+、月流水4000万，年流水5个亿。 研发团队从我一个人的单打独斗扩张到现在几个团队。一路走来，从高级研发到架构师，从架构师到项目总监的转型，临时接手大数据组种种的经历。接下来以个人的经验来总结下技术研发团队的管理心得。</p>
+        <p><strong>背景</strong>：随着公司业务增长数据量也相应的随着一起增长了。由于我司用的缓存数据库是Redis，它的keys也大幅度的增长，内存的消耗也越来越高。近日引发了一个严重的问题，最终虽然及时解决了，没有造成服务宕机以及经济损失。但通过网上搜索发现对此问题的解决方案几乎没有故而想对此次问题的排查过程做一个总结。</p>
 <a id="more"></a>
-<p>经历几个阶段:</p>
-<p><strong>第一阶段</strong>: 对于我们这样一个创业公司来说，刚开始人不多，而且要求产品赶快上线进行第一轮验证，因此以产品灵活、响应快、研发与产品配合度高的情况就体现出来了。但这种模式是以产品快速响应用户需求为导向，对研发质量的不重视也为后来埋下了巨大的隐患。无论是代码规范性、性能的要求都缺乏足够的重视，导致后来很多代码无人能接手，很多技术瓶颈完全无法解决，最终没办法只能重构。</p>
-<p><strong>第二阶段</strong>: 是纯粹的直线职能制的流程化开发模式，按产品出需求、研发实现、测试验收的流程化进行的。这种模式的好处是各司其职，每个部门把自己的事做好就行，而且各部门在质量上都有提高，无论是产品的需求完整度，研发的代码和架构质量以及测试对细节的把控都有很大的提高。但也不是没有问题。这种模式对市场和用户的响应程度上就明显慢很多，而且没有人对整体项目的结果负责，产品也缺乏真正的核心功能和亮点。还有一方面是在团队协作上效率极低，相互推诿，相互攻击，不利于团结的情况时有发生，对公司整体团队氛围也影响很大。</p>
-<p><strong>第三阶段:</strong> 项目制度的模式，由产品发起需求，进行需求评审确定功能有价值进行研发，评估研发成本后，从各个部门调配研发、设计和测试人员资源。整个项目成员属于一个团队，每个人对自己负责的工作负责。产品做为对整体项目的结果负责，会把好最后的验收关。团队协作上的效率得到提升，大家目标一致，为了最终的项目交付积极努力工作。</p>
-<p>做为<strong>研发管理者的</strong>总结了如下几点:</p>
-<ul>
-<li>技术架构(<strong>技术视野</strong>)。技术能力仍然是基础，但是要格局更宽阔、视角更全面，既要能关注到未来的技术发展方向和趋势，也对公司的技术储备和路线心中有数，能够进行技术的落地和创新。公司什么阶段该用什么样的技术，哪些新的技术需要引进来，在不同的阶段，引入什么样的技术力量，这些都是技术管理者的职责。<ul>
-<li>建立公司主营业务中技术框架和实施模式</li>
-<li>建立技术体系标准</li>
-</ul>
-</li>
-<li>流程制度（<strong>管理能力</strong>）。在技术岗上，你的成功就只是决定于你做得有多好；在管理岗上，你的成功决定于别人做得有多好。成为管理者，一定要有这个思维方式的转变，重点是让团队做好，而不是自己亲自动手。而想让团队具备高战斗力是需要很多「道」与「术」的，比如打造团队文化、团队激励是「道」，沟通技巧、考核方式是「术」，而这些如果不想在实践中通过各种挫折来走弯路，那就一定要多学习和了解一些行业大拿的成功经验。<ul>
-<li>建立高效率的技术团队</li>
-<li>建立健全的项目管理体系</li>
-<li>建立员工能力发展体系</li>
-</ul>
-</li>
-<li>知识体系<ul>
-<li>知识库管理体系，技术培训和分享体系</li>
-</ul>
-</li>
-<li>视野&amp;执行(<strong>商业嗅觉</strong>)。其实这考验的是对于业务和公司战略的理解程度，作为技术管理者一定要明白，技术最终还是要通过业务来产出价值，想要制定技术战略，首先要了解企业战略，了解行业趋势，了解公司在行业中的位置和地位，然后再去考虑技术团队如何支持和配合公司的战略，在这个过程中，优秀的技术管理者要学会跨界，跳出技术人的思维，从产品、市场甚至CEO的视角去思考问题，从而培养自己的战略思考能力。<ul>
-<li>具备技术前瞻性、战略落地能力</li>
-</ul>
-</li>
-</ul>
-<p><strong>题外话：</strong></p>
-<p>当我还是个单纯直男癌程序员的时候，觉得做技术应该是最复杂的，时不时想要搞个客户端技术，网络、SQL、架构设计、Java，操作系统, 什么都要懂；Python，Js, shell要学的东西很多；还不断的有新的东西出来，今天 React Native，kotlin ，明天又大数据，后天人工智能，区块链等等。。学无止境呐。</p>
-<p>在看看那些高管和老板们，不参与具体的版本开发，不需要找bug，天天就是开开会，发发邮件，今天跟测试撕逼，明天和产品讨论版本计划，后天和项目经理讨论人力安排，半年来个总结汇报，多轻松啊。</p>
-<p><strong>只有当我做了leader后，有些事我才真正开始明白</strong></p>
-<ol>
-<li>决策者永远比执行者累，要负的责任和要做的事的大小的影响都是完全不同的概念。</li>
-<li>想要招聘个心仪的下属，不知道要花掉多大的力气还有运气才行。</li>
-<li>管理方法是可以学的，但是责任，担当，格局这些内在是需要修炼的！</li>
-<li>下属能力不够，有leader来带；自己能力不够，自己想办法去弥补。</li>
-<li>公司失败了，永远是老板的责任，老板不会说公司失败了是因为招了一堆垃圾员工，因为招什么人的责任也是老板自己来背。这个原则向下同样适用于任何管理职位。</li>
-<li>从来不会因为某个技术问题发愁，让人累的都是人的问题</li>
-<li>很多时候明明已经对全部人交代了，但很多人还是要单独确认，同样的话总是要翻来覆去的说。推出一个新的流程，自己要先试试，然后写清操作规程，接着是普及和推广。然后运行的时候各种低级错误依旧层出不穷。</li>
+<h1 id="故障简述"><a href="#故障简述" class="headerlink" title="故障简述"></a>故障简述</h1><ol>
+<li>某日，运维收到了报警，线上Redis从库节点掉出MS集群， Master-Slaver失效。 运维当时对问题未经过定位，就先觉得把节点再次加入到集群。</li>
+<li>数小时候后，从节点再次掉出，运维观察到节点日志，发现从节点链接主库timeout报错信息； 推测数据量增长主从同步时间变长，调整了repl-timeout配置参数，从60秒调整为300秒。</li>
+<li>次日凌晨，突然主节点日志也发现错误信息，从节点再次掉出集群并且一直无法sync主节点的数据，从而无法提供服务。此时线上Redis集群处于单点状态，故障升级。</li>
 </ol>
+<h1 id="排查和解决"><a href="#排查和解决" class="headerlink" title="排查和解决"></a>排查和解决</h1><p>我和后端研发介入排查：分析了主节点log信息，发现一段bug report信息中有个一个属性 <em>rdb_last_bgsave_time_sec</em>:305， grep了报错信息，发现一次bug report 报错中这个属性的值300上下，why？ 跟运维沟通他们刚调整了从节点的repl-timeout配置从60秒调整为300秒。 似乎发现了线索，马上启用一个丛节点实例将时间调整为600秒， 结果主节点bgsave恢复正常，从节点也顺利同步了主节点落后的keys。</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># Persistence</span><br><span class="line">loading:<span class="number">0</span></span><br><span class="line">rdb_changes_since_last_save:<span class="number">8966427</span></span><br><span class="line">rdb_bgsave_in_progress:<span class="number">0</span></span><br><span class="line">rdb_last_save_time:<span class="number">1557748295</span></span><br><span class="line">rdb_last_bgsave_status:err</span><br><span class="line">rdb_last_bgsave_time_sec:<span class="number">305</span></span><br><span class="line">rdb_current_bgsave_time_sec:-<span class="number">1</span></span><br></pre></td></tr></table></figure>
+<h1 id="官方：Replication-Timeouts"><a href="#官方：Replication-Timeouts" class="headerlink" title="官方：Replication Timeouts"></a>官方：Replication Timeouts</h1><p>Redis’ replication timeout is set to 60 seconds by default (see the repl-timeout directive in your <a href="https://download.redis.io/redis-stable/redis.conf" target="_blank" rel="noopener">redis.conf file</a> or do a config get repl-timeout using redis-cli).</p>
+<p>官方的解释：此参数缺省时间是60s 有些情况下是需要调长 repl-timeout 时间的。如下几个原因：</p>
+<ol>
+<li>硬件情况不佳：如果主节点或从节点用硬件性能不特别好，可能会导致住节点bgsave的时候写入磁盘过长的时间； 从库同步主库的和loaddata时间过长。</li>
+<li>数据量较大：当数据量过大的情况下，需要更长的时间来同步。</li>
+<li>网络带宽：当网络带宽有限或者高延迟的情况下，需要设置更长的时间。</li>
+</ol>
+<h1 id="实践：如何设置合适时间"><a href="#实践：如何设置合适时间" class="headerlink" title="实践：如何设置合适时间"></a>实践：如何设置合适时间</h1><ol>
+<li>首先记录下bgsave完整执行一次的时间，方法是执行<a href="https://redis.io/commands/bgsave" target="_blank" rel="noopener">BGSAVE</a>命令并检查相关行的日志文件。</li>
+<li>接下来，计算RDB文件从主服务器复制到从服务磁盘所需要的时间。</li>
+<li>最后计算从节点从磁盘RDB加载数据所需时间。</li>
+<li>初略统计后为了安全起见可以增加10~20%的时长。</li>
+</ol>
+<p>设置完毕后，需要反复多尝试几次完全同步RDB文件所需要的时间，最好是能在不同时间段不同负载下来计算。要记住，根据数据量的增长情况来定期检查时间。</p>
+<p><a href="https://redislabs.com/blog/top-redis-headaches-for-devops-replication-timeouts/#.VQnLsWSqrzY" target="_blank" rel="noopener">REDIS BLOG</a></p>
 
       
     </div>
@@ -384,9 +367,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/管理/" rel="tag">#管理</a>
+            <a href="/tags/故障/" rel="tag">#故障</a>
           
-            <a href="/tags/研发/" rel="tag">#研发</a>
+            <a href="/tags/redis/" rel="tag">#redis </a>
           
         </div>
       
@@ -395,17 +378,13 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/大数据/HBase/" rel="next" title="大数据-HBase">
-                <i class="fa fa-chevron-left"></i> 大数据-HBase
+              <a href="/product/消息队列一二三/" rel="next" title="聊聊消息队列">
+                <i class="fa fa-chevron-left"></i> 聊聊消息队列
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/运维/troubleshooting/" rel="prev" title="在线故障排查总结">
-                在线故障排查总结 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -530,7 +509,7 @@
               
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#故障简述"><span class="nav-number">1.</span> <span class="nav-text">故障简述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#排查和解决"><span class="nav-number">2.</span> <span class="nav-text">排查和解决</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#官方：Replication-Timeouts"><span class="nav-number">3.</span> <span class="nav-text">官方：Replication Timeouts</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实践：如何设置合适时间"><span class="nav-number">4.</span> <span class="nav-text">实践：如何设置合适时间</span></a></li></ol></div>
             
           </div>
         </section>
