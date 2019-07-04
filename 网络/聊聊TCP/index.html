@@ -98,7 +98,7 @@
 <meta property="og:image" content="https://onelee85.github.io/images/tcp/three.png">
 <meta property="og:image" content="https://onelee85.github.io/images/tcp/tcp-three.png">
 <meta property="og:image" content="https://onelee85.github.io/images/tcp/four.png">
-<meta property="og:updated_time" content="2019-07-03T08:20:21.538Z">
+<meta property="og:updated_time" content="2019-07-04T06:24:20.158Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="聊聊TCP">
 <meta name="twitter:description" content="我们作为研发，多少在工作中会涉猎到网络传输这块。 故而这次是整理下TCP的一些核心知识点。为一名开发者来说，尽管有那么多的基础设施(框架、组件)帮我们屏蔽了这些细节。当我仍然认为了解它的一些基本原理必有些裨益，尤其是当我们在分布式环境上或者网络上遇到一些棘手问题时，一些原理性的知识可能会让你快速找到答案。">
@@ -391,7 +391,7 @@
 <p><strong>为什么是四次挥手?</strong></p>
 <p>发送FIN的一方就是主动关闭(客户端)，而另一方则为被动关闭(服务器)。<br>当一方发送了FIN，则表示在这一方不再会有数据的发送。<br>其中当被动关闭方受到对方的FIN时，此时往往可能还有数据需要发送过去，因此无法立即发送FIN(也就是无法将FIN与ACK合并发送)，<br>而是在等待自己的数据发送完毕后再单独发送FIN，因此整个过程需要四次交互。</p>
 <p><strong>什么是半关闭?</strong></p>
-<p>客户端在收到第一个FIN的ACK响应后，会进入FINWAIT2 状态时，此时服务器处于 CLOSEWAIT状态，这种状态就称之为<strong>半关闭</strong>。从半关闭到全关闭，需要等待第二次FIN的确认才算结束。此时，客户端要等到服务器的FIN才能进入TIMEWAIT，如果对方迟迟不发送FIN呢，则会等待一段时间后超时，这个可以通过内核参数<strong>tcp**</strong>fin_timeout**控制，默认是60s。</p>
+<p>客户端在收到第一个FIN的ACK响应后，会进入FINWAIT2 状态时，此时服务器处于 CLOSEWAIT状态，这种状态就称之为<strong>半关闭</strong>。从半关闭到全关闭，需要等待第二次FIN的确认才算结束。此时，客户端要等到服务器的FIN才能进入TIMEWAIT，如果对方迟迟不发送FIN呢，则会等待一段时间后超时，这个可以通过内核参数<strong>tcp</strong> <strong>fin_timeout</strong>控制，默认是60s。</p>
 <p><strong>服务器会有大量 closewait?</strong></p>
 <p>半关闭的状态下的服务器连接会处于 closewait 状态，直到服务器发送了FIN。 那么在应用层则是调用<strong>socket.close()</strong>会执行FIN的发送，如果服务器出现大量CLOSE_WAIT状态的连接，那么有可能的原因：</p>
 <ul>
