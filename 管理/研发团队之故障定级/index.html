@@ -1,0 +1,768 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.lug.ustc.edu.cn/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="故障,团队," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="前言最近线上发生了一次严重事故，安卓客户端崩溃率从千分之二突然暴涨至百分之二，上涨了2000%。虽没有造成直接的经济损失，可是对用户体验伤害很大。 故而对此进行了一次细致的复盘；通过此次事件也发现了整个研发团队其实一直缺乏故障的处理规范和流程， 本文主要是整理流程规范以及模板。">
+<meta name="keywords" content="故障,团队">
+<meta property="og:type" content="article">
+<meta property="og:title" content="研发团队之故障定级">
+<meta property="og:url" content="https://onelee85.github.io/管理/研发团队之故障定级/index.html">
+<meta property="og:site_name" content="James&#39;s 烂笔头">
+<meta property="og:description" content="前言最近线上发生了一次严重事故，安卓客户端崩溃率从千分之二突然暴涨至百分之二，上涨了2000%。虽没有造成直接的经济损失，可是对用户体验伤害很大。 故而对此进行了一次细致的复盘；通过此次事件也发现了整个研发团队其实一直缺乏故障的处理规范和流程， 本文主要是整理流程规范以及模板。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-09-28T02:40:44.150Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="研发团队之故障定级">
+<meta name="twitter:description" content="前言最近线上发生了一次严重事故，安卓客户端崩溃率从千分之二突然暴涨至百分之二，上涨了2000%。虽没有造成直接的经济损失，可是对用户体验伤害很大。 故而对此进行了一次细致的复盘；通过此次事件也发现了整个研发团队其实一直缺乏故障的处理规范和流程， 本文主要是整理流程规范以及模板。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 3109763,
+      author: 'Charles0429'
+    }
+  };
+</script>
+
+  <title> 研发团队之故障定级 | James's 烂笔头 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?6783c3663ad3a4aee432726abc0999c9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">James's 烂笔头</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">好记心不如烂笔头</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                研发团队之故障定级
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2019-09-26T11:38:00+08:00" content="2019-09-26">
+              2019-09-26
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/管理/" itemprop="url" rel="index">
+                    <span itemprop="name">管理</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近线上发生了一次严重事故，安卓客户端崩溃率从千分之二突然暴涨至百分之二，上涨了2000%。虽没有造成直接的经济损失，可是对用户体验伤害很大。 故而对此进行了一次细致的复盘；通过此次事件也发现了整个研发团队其实一直缺乏故障的处理规范和流程， 本文主要是整理流程规范以及模板。</p>
+<a id="more"></a>
+<h1 id="事前预防"><a href="#事前预防" class="headerlink" title="事前预防"></a>事前预防</h1><ol>
+<li>规范代码规范、数据库设计规范、日志和告警打点规范</li>
+<li>规范git分支建立和合并、规范测试流程【全面的单元测试、测试介入】</li>
+<li>规范Review制度，明确审核的责任【识别出代码上线带来的风险，明确Review的仔细程度，P1以上故障Review人要负10%的责任】</li>
+<li>规范上线流程【每个项目都需要上线计划，包括配置、数据库、代码项目和发布顺序、回滚方案等】</li>
+<li>灰度发布、预发和监控机制，灰度应用出现问题及时回滚</li>
+<li>规范【数据清洗】等高风险行为，高度重视这类操作【容易被忽视】，必须提供完整方案【包括是否备份、如何回滚等】</li>
+</ol>
+<hr>
+<h1 id="事中处理"><a href="#事中处理" class="headerlink" title="事中处理"></a>事中处理</h1><h2 id="线上故障处理SOP"><a href="#线上故障处理SOP" class="headerlink" title="线上故障处理SOP"></a>线上故障处理SOP</h2><ol>
+<li>线上故障第一要务【发布回滚】，因此针对高风险代码，一定要单独发布，便于回滚</li>
+<li>线上故障第二要务【周知干系人】，随时通报故障处理进度，让真正了解该问题的干系人尽早参与进来</li>
+<li>测试第一时间重现和记录BUG【JIRA】</li>
+<li>故障代码revert【通常来说，代码问题只要无法在30分钟内修复，就一定要回退代码，避免其他项目把错误代码带上线，再次带来故障】</li>
+<li>修复问题，完成回归测试后重新上线，如果BUG带来错误数据则需要全面评估数据清洗的风险，避免造成更加严重的次生伤害</li>
+<li>完成上线后，测试人员要验证线上BUG是否解决【上线后如还未解决，测试负责80%责任】</li>
+</ol>
+<hr>
+<h1 id="事后总结"><a href="#事后总结" class="headerlink" title="事后总结"></a>事后总结</h1><h2 id="故障定级"><a href="#故障定级" class="headerlink" title="故障定级"></a>故障定级</h2><p>严重性逐步递增：P1~P4<br>一针对不同业务、不同层次、不同持续时间、不同后果细化故障定级，并且要周知所有干系人，确认后执行。</p>
+<table>
+<thead>
+<tr>
+<th><strong>级别定义</strong></th>
+<th><strong>描述值</strong></th>
+<th><strong>具体定义</strong></th>
+<th><strong>备注</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>致命</td>
+<td>P1</td>
+<td>系统崩溃, 导致程序重启,死机或非法退出 。 数据丢失或异常  。产品核心流程无法正常使用(登录注册、首页浏览、主播间聊天和视频、送礼、小游戏、充值)。直接或间接造成经济损失30万以上。</td>
+<td>不能完全满足系统要求，系统停止运行，系统的重要部件无法运行，系统崩溃或者挂起等导致系统不能正常运行, 直接或间接造成经济。</td>
+</tr>
+<tr>
+<td>严重</td>
+<td>P2</td>
+<td>功能不符合用户需求  数据计算错误  业务流程错误  程序接口错误 因错误操作迫使程序中断； 系统可被执行，但操作功能无法执行（含指令）； 功能项的某些项目（选项）使用无效（对系统非致命的）； 功能实现不完整； 功能的实现不正确，如在系统实现的界面上，一些可接受输入的控件点击后无作用，对数据库的操作不能正确实现。直接或间接造成经济损失30万以下</td>
+<td>严重地影响系统要求或基本功能的实现，且没有更正办法（重新安装或重新启动该软件不属于更正办法）。使系统不稳定、或破坏数据、或产生错误结果，或部分功能无法执行，而且是常规操作中经常发生或非常规操作中不可避免的主要问题，系统无法满足主要的业务要求，性能、功能或可用性严重降低。</td>
+</tr>
+<tr>
+<td>一般</td>
+<td>P3</td>
+<td>数据长度不一致内容或格式错误  响应时间较慢  功能性建议 提示信息不太准确 操作界面错误（包括数据窗口内列名定义、含义是否一致）； 简单的输入限制未放在前台进行控制； 虽然正确性不受影响，但系统性能和响应时间受到影响； 不能定位焦点或定位有误，影响功能实现；</td>
+<td>系统可以满足业务要求，系统性能或响应时间变慢、产生错误的中间结果但不影响最终结果等影响有限的问题。</td>
+</tr>
+<tr>
+<td>低级/建议</td>
+<td>P4</td>
+<td>界面不规范； 辅助说明描述不清楚； 输入输出不规范； 长时间操作未给用户提示； 提示窗口文字未采用行业术语； 可输入区域和只读区域没有明显的区分标志； 必填项与非必填项应加以区别； 滚动条无效； 键盘支持不好，如在可输入多行的字段中，不支持回车换行； 界面不能及时刷新，影响功能实现。</td>
+<td>使用不方便或操作麻烦，但它不影响执行工作功能或重要功能。界面拼写错误或用户使用不方便等小问题或需要完善的问题.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="高压线"><a href="#高压线" class="headerlink" title="高压线"></a>高压线</h2><p>高压线要坚决杜绝，碰一次就要让责任人疼一次。</p>
+<ol>
+<li>未经测试和发布系统，私自变更线上代码和配置</li>
+<li>未经授权，私自在业务高峰期进行硬件和网络设备变更</li>
+<li>未知授权，私自在生产环境进行测试性质的操作</li>
+<li>未经授权，私自变更生产环境数据信息</li>
+<li>未经授权，私自导出公司内部数据</li>
+</ol>
+<h2 id="责任人范围"><a href="#责任人范围" class="headerlink" title="责任人范围"></a>责任人范围</h2><p><strong>【</strong>开发人员<strong>】</strong>及其多级Leader、【测试人员】及其多级Leader<strong>共同分摊</strong>。</p>
+<ol>
+<li>由产品/运营设计不合理带来的bug，产品/运营同学需要负主要责任。</li>
+<li>有测试参与的任务，测试和研发共担责任  测试：研发 责任占比为6：4。</li>
+<li>代码问题 Review人要负10%的责任</li>
+<li>其他情况，研发负主要责任。</li>
+</ol>
+<h2 id="故障复盘"><a href="#故障复盘" class="headerlink" title="故障复盘"></a>故障复盘</h2><p>在故障处理完成后，一定要复盘并由责任人编写Case Study并根据相关价值决定是否需要团队内分享【一定要避免同样的问题再次发生】</p>
+<hr>
+<h3 id="Case-Study"><a href="#Case-Study" class="headerlink" title="Case Study"></a>Case Study</h3><p><strong>2019-09-11 XX bug事故报告</strong><br><strong>级别</strong>：Px 作者：XX<br><strong>（一）事故影响</strong><br> <strong>摘要：9月11日凌晨崩溃率上升1.58%，陡增2000%；9月11日热修复后问题未到得解决崩溃率未降低</strong><br>影响范围 ：每日涉及1000个用户<br>时间：2019/09/11 17:24 ~ 2019/09/12 19:00<br>损失 : 无<br>责任方: 测试、研发部、产品<br>责任人: XXX XXX </p>
+<p><strong>（二）事故原因</strong><br>诱因 ：中秋活动中频繁进出直播间导致崩溃<br>主因 ：<br>1.在研发和测试过程中没有落实到每一个细节，活动特殊情况需要在特定时间段触发逻辑，没有及时在测试过程反馈。<br>2.研发自测未考虑完善 。<br>3.当天热修复发布后，未及时验证问题是否解决。</p>
+<p><strong>（三）事故过程</strong><br>时间线 ：<br>2019/09/11 00:40 收到bugly预警，<strong>崩溃率超过预警阈值。</strong><br>2019/09/11 10:00 研发同学定位的导致崩溃的原因<br>2019/09/11 11:00 研发修复问题<br>前期：安卓冒烟测试和核心模块回归测试缺失<br>发现、止损、解决、验证、恢复：发现问题到确认问题用了12个小时，二次修复未得到验证就发布<br>解决&amp;自测&amp;测试： 崩溃一直持续到9/11下午2点半，第二天9/12热更新补丁 修复 版本</p>
+<p><strong>（四）问题总结和优化点及计划 </strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">事项</th>
+<th style="text-align:left">责任人</th>
+<th style="text-align:left">完成时间</th>
+<th style="text-align:left">关联(JIRA/TB任务)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">崩溃类型总结文档</td>
+<td style="text-align:left">XXXXXX</td>
+<td style="text-align:left">2019年10月30日</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">每个迭代codereview</td>
+<td style="text-align:left">XXXXXX</td>
+<td style="text-align:left">每次GIT MR</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">bugly测试环境支持</td>
+<td style="text-align:left">XXXXXX</td>
+<td style="text-align:left">2019年9月15日</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">每个迭代特殊功能测试点梳理组织</td>
+<td style="text-align:left">XXXXXX</td>
+<td style="text-align:left">每个迭代需求会议后</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">测试加强机型覆盖和意外操作测试</td>
+<td style="text-align:left">XXXXXX</td>
+<td style="text-align:left">2019年9月30日</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">制定故障处理流程，修复流程文档</td>
+<td style="text-align:left">XXXXXX</td>
+<td style="text-align:left">2019年9月30日</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">新的事故总结模板、故障评级、责任制度整理</td>
+<td style="text-align:left">XXXXXX</td>
+<td style="text-align:left">2019年9月30日</td>
+</tr>
+</tbody>
+</table>
+<p><strong>（五）六问</strong><br>Q：设计、编码层面，有哪些问题？<br>A：<br>Q：测试为什么没有发现？<br>A :<br>Q：监控是否第一时间发现，为什么没有？<br>A：<br>Q：为什么系统不能容错？<br>A:<br>Q：解决速度能否更快、损失能否更小，如何做到？<br>A：<br>Q：怎样避免类似情况发生？<br>A：</p>
+<h2 id="故障处罚"><a href="#故障处罚" class="headerlink" title="故障处罚"></a>故障处罚</h2><p><strong>基本原则：责任划分是次要，重点在预防</strong></p>
+<ol>
+<li><strong>P1级别事故/高压线</strong>： 公开邮件通报批评。相关人员以及多级leader绩效记为2分，直接影响年终奖金以及调薪。</li>
+<li><strong>P2级别事故</strong>： 公开邮件通报批评。故障复盘会议上，明确指出责任人，提出批评。</li>
+<li><strong>P3级别事故</strong>： 故障复盘会议上，明确指出责任人，提出批评。</li>
+<li><strong>P4级别事故</strong>： 内部迭代复盘会议指出问题，提出整改和方案</li>
+</ol>
+<h1 id="最后想说的"><a href="#最后想说的" class="headerlink" title="最后想说的"></a>最后想说的</h1><p>对于大公司大型团队合理的流程和制定能保证质量，而对于一个小团队而言，较为繁琐的流程和规范是一把双刃剑，很大可能会影响团队的效率和积极性。当责任与处罚挂钩，如果处置得不严谨和巧妙的话，最后必定会导致复盘会议变成一场甩锅的口舌之争，谁也不愿意背锅；多做多错，少做少错的思想可能也会在团队中蔓延。 所以如何用好这些制度和流程，如何在<em>减少公司损失</em>和<em>降低员工积极性</em> 两方面平衡好，要结合实际的情况慎重考虑。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/故障/" rel="tag">#故障</a>
+          
+            <a href="/tags/团队/" rel="tag">#团队</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/测试/接口自动化-实践/" rel="next" title="接口自动化-实践">
+                <i class="fa fa-chevron-left"></i> 接口自动化-实践
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="James" />
+          <p class="site-author-name" itemprop="name">James</p>
+          <p class="site-description motion-element" itemprop="description">好记心不如烂笔头</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">39</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">45</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/onelee85" target="_blank" title="Github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Github
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#事前预防"><span class="nav-number">2.</span> <span class="nav-text">事前预防</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#事中处理"><span class="nav-number">3.</span> <span class="nav-text">事中处理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#线上故障处理SOP"><span class="nav-number">3.1.</span> <span class="nav-text">线上故障处理SOP</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#事后总结"><span class="nav-number">4.</span> <span class="nav-text">事后总结</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#故障定级"><span class="nav-number">4.1.</span> <span class="nav-text">故障定级</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高压线"><span class="nav-number">4.2.</span> <span class="nav-text">高压线</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#责任人范围"><span class="nav-number">4.3.</span> <span class="nav-text">责任人范围</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#故障复盘"><span class="nav-number">4.4.</span> <span class="nav-text">故障复盘</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Case-Study"><span class="nav-number">4.4.1.</span> <span class="nav-text">Case Study</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#故障处罚"><span class="nav-number">4.5.</span> <span class="nav-text">故障处罚</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#最后想说的"><span class="nav-number">5.</span> <span class="nav-text">最后想说的</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">James</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+  
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>
