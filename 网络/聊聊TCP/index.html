@@ -98,7 +98,7 @@
 <meta property="og:image" content="https://onelee85.github.io/images/tcp/three.png">
 <meta property="og:image" content="https://onelee85.github.io/images/tcp/tcp-three.png">
 <meta property="og:image" content="https://onelee85.github.io/images/tcp/four.png">
-<meta property="og:updated_time" content="2019-11-06T03:32:05.760Z">
+<meta property="og:updated_time" content="2019-11-06T03:34:10.911Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="聊聊TCP">
 <meta name="twitter:description" content="我们作为研发，多少在工作中会涉猎到网络传输这块。 故而这次是整理下TCP的一些核心知识点。为一名开发者来说，尽管有那么多的基础设施(框架、组件)帮我们屏蔽了这些细节。当我仍然认为了解它的一些基本原理必有些裨益，尤其是当我们在分布式环境上或者网络上遇到一些棘手问题时，一些原理性的知识可能会让你快速找到答案。">
@@ -378,12 +378,7 @@
 <li>客户端收到服务器的SYN+ACK包，向服务器发送确认报ACK（ack=k+1），此后客户端和服务器进入<strong>ESTABLISHED</strong>状态，双方可以开始传送数据。</li>
 </ol>
 <p><strong>为什么是三次握手</strong>?</p>
-<p>1.<strong>防止建立重复连接</strong></p>
-<p>TCP 是可靠的传输，在建立连接时就应该经过两端的确认过程，如上面的流程，<br>只有在三次握手的情况下，客户端和服务端都经过了一次真正<code>SYN+ACK</code>的确认过程。这样的连接便认为是可信的。此外，如果仅仅只是两次握手，一旦网络不稳定造成 <code>SYN</code> 包重传则会直接导致重复建立连接，浪费资源。</p>
-<p>2.<strong>初始序列号</strong></p>
-<p> 序列号在 TCP 连接中有着非常重要的作用，初始序列号作为 TCP 连接的一部分也需要在三次握手期间进行初始化，由于 TCP 连接通信的双方都需要获得初始序列号，所以它们其实需要向对方发送 <code>SYN</code> 控制消息并携带自己期望的初始化序列号 <code>SEQ</code>，对方在收到 <code>SYN</code> 消息之后会通过 <code>ACK</code> 控制消息以及 <code>SEQ+1</code> 来进行确认。</p>
-<p><strong>总结:</strong> </p>
-<p>TCP  建立连接时通过三次握手可以有效地避免历史错误连接的建立，减少通信双方不必要的资源消耗，三次握手能够帮助通信双方获取初始化序列号，它们能够保证数据包传输的不重不丢，还能保证它们的传输顺序，不会因为网络传输的问题发生混乱，到这里不使用『两次握手』和『四次握手』的原因已经非常清楚了：</p>
+<p>1.<strong>防止建立重复连接</strong><br>TCP 是可靠的传输，在建立连接时就应该经过两端的确认过程，如上面的流程，<br>只有在三次握手的情况下，客户端和服务端都经过了一次真正<code>SYN+ACK</code>的确认过程。这样的连接便认为是可信的。此外，如果仅仅只是两次握手，一旦网络不稳定造成 <code>SYN</code> 包重传则会直接导致重复建立连接，浪费资源。<br>2.<strong>初始序列号</strong><br> 序列号在 TCP 连接中有着非常重要的作用，初始序列号作为 TCP 连接的一部分也需要在三次握手期间进行初始化，由于 TCP 连接通信的双方都需要获得初始序列号，所以它们其实需要向对方发送 <code>SYN</code> 控制消息并携带自己期望的初始化序列号 <code>SEQ</code>，对方在收到 <code>SYN</code> 消息之后会通过 <code>ACK</code> 控制消息以及 <code>SEQ+1</code> 来进行确认。<br><strong>总结:</strong><br>TCP  建立连接时通过三次握手可以有效地避免历史错误连接的建立，减少通信双方不必要的资源消耗，三次握手能够帮助通信双方获取初始化序列号，它们能够保证数据包传输的不重不丢，还能保证它们的传输顺序，不会因为网络传输的问题发生混乱，到这里不使用『两次握手』和『四次握手』的原因已经非常清楚了：</p>
 <ul>
 <li>『两次握手』：无法避免历史错误连接的初始化，浪费接收方的资源。</li>
 <li>『四次握手』：TCP 协议的设计可以让我们同时传递 <code>ACK</code> 和 <code>SYN</code> 两个控制信息，减少了通信次数，所以不需要使用更多的通信次数传输相同的信息。</li>
