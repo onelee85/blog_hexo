@@ -1,0 +1,689 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.lug.ustc.edu.cn/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="索引,数据库," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="前言最近招聘后端工程师，我们会考察一些数据库相关的题目，特别是关于索引用法以及索引的原理， 相信在各大互联网公司面试中大家也会常常遇到的此类题目。发现能回答好的人不是特别多； 然而作为一名后端工程师，经常需要跟数据库打交道的，即便是最基础的CRUD操作，如果只是会用还不够，当线上真实场景数据量上来后，如果没有深入理解很容发生严重的问题。故而整理此篇博客坐下来好好聊数据库索引。">
+<meta name="keywords" content="索引,数据库">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从面试谈到数据库索引">
+<meta property="og:url" content="https://onelee85.github.io/数据库/从面试谈到数据库索引/index.html">
+<meta property="og:site_name" content="James&#39;s 烂笔头">
+<meta property="og:description" content="前言最近招聘后端工程师，我们会考察一些数据库相关的题目，特别是关于索引用法以及索引的原理， 相信在各大互联网公司面试中大家也会常常遇到的此类题目。发现能回答好的人不是特别多； 然而作为一名后端工程师，经常需要跟数据库打交道的，即便是最基础的CRUD操作，如果只是会用还不够，当线上真实场景数据量上来后，如果没有深入理解很容发生严重的问题。故而整理此篇博客坐下来好好聊数据库索引。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://onelee85.github.io/images/indexs/hash.png">
+<meta property="og:image" content="https://onelee85.github.io/images/indexs/sreachTree.png">
+<meta property="og:image" content="https://onelee85.github.io/images/indexs/st2.png">
+<meta property="og:image" content="https://onelee85.github.io/images/indexs/avl.png">
+<meta property="og:image" content="https://onelee85.github.io/images/indexs/B+tree.png">
+<meta property="og:updated_time" content="2019-11-20T02:55:49.085Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="从面试谈到数据库索引">
+<meta name="twitter:description" content="前言最近招聘后端工程师，我们会考察一些数据库相关的题目，特别是关于索引用法以及索引的原理， 相信在各大互联网公司面试中大家也会常常遇到的此类题目。发现能回答好的人不是特别多； 然而作为一名后端工程师，经常需要跟数据库打交道的，即便是最基础的CRUD操作，如果只是会用还不够，当线上真实场景数据量上来后，如果没有深入理解很容发生严重的问题。故而整理此篇博客坐下来好好聊数据库索引。">
+<meta name="twitter:image" content="https://onelee85.github.io/images/indexs/hash.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 3109763,
+      author: 'Charles0429'
+    }
+  };
+</script>
+
+  <title> 从面试谈到数据库索引 | James's 烂笔头 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?6783c3663ad3a4aee432726abc0999c9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">James's 烂笔头</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">好记心不如烂笔头</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                从面试谈到数据库索引
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2019-11-15T10:15:00+08:00" content="2019-11-15">
+              2019-11-15
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/数据库/" itemprop="url" rel="index">
+                    <span itemprop="name">数据库</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近招聘后端工程师，我们会考察一些数据库相关的题目，特别是关于索引用法以及索引的原理， 相信在各大互联网公司面试中大家也会常常遇到的此类题目。发现能回答好的人不是特别多； 然而作为一名后端工程师，经常需要跟数据库打交道的，即便是最基础的CRUD操作，如果只是会用还不够，当线上真实场景数据量上来后，如果没有深入理解很容发生严重的问题。故而整理此篇博客坐下来好好聊数据库索引。</p>
+<a id="more"></a>
+<p><strong>本文的重点:</strong></p>
+<ol>
+<li>几种常见的索引 </li>
+<li>索引的原理</li>
+<li>实战中的应用</li>
+</ol>
+<h1 id="数据库为什么要设计索引？"><a href="#数据库为什么要设计索引？" class="headerlink" title="数据库为什么要设计索引？"></a><strong>数据库为什么要设计索引？</strong></h1><p>可以想象下：一个图书馆中存了几千万本图书，借书人要从中找到《数据库原理》，如果需要一本本查，要查到什么时候去？于是，图书管理设计了一套检索规则：<br>(1)一楼放历史类，二楼放文学类，三楼放IT类…<br>(2)IT类，又分软件类，硬件类…<br>(3)软件类，又按照书名音序排序…以便快速找到一本书。<br>与之类比，数据库存储了几千万条数据，要从中找到name=”database”的记录，如果一条条遍历，需要查到什么时候去？于是，有了<strong>索引</strong>，用于提升数据库的查找速度。</p>
+<h1 id="常见索引模型"><a href="#常见索引模型" class="headerlink" title="常见索引模型"></a>常见索引模型</h1><ol>
+<li>哈希索引</li>
+<li>B+树索引</li>
+<li>全文索引（本文暂不做讨论）</li>
+</ol>
+<h2 id="哈希索引"><a href="#哈希索引" class="headerlink" title="哈希索引"></a>哈希索引</h2><p>哈希索引是以键值对（key-value）存储结构，只要根据 key 就可以找到 value。可以理解为一个数组，对 key 进行哈希计算，换算成一个确定的位置，把 value 放入此位置。因为存储hash冲突的情况，多个value可能在同一个位置上，使用链表，后来的就追加到链表中。如图<br><img src="/images/indexs/hash.png" alt="hash"></p>
+<h2 id="B-树索引"><a href="#B-树索引" class="headerlink" title="B+树索引"></a>B+树索引</h2><h3 id="二叉树查找树"><a href="#二叉树查找树" class="headerlink" title="二叉树查找树"></a>二叉树查找树</h3><p>聊B+树之前我们先聊聊其他的二叉树， 也能够更清楚为什么数据库要选择B+树的结构。</p>
+<p> <strong>二叉树查找树是一种经典的数据结构，要求左子树小于根节点，右子树大于根节点。</strong><br><strong>特点:</strong> 左子节点 &lt; 父节点，父节点 &lt; 右子节点。<br>如有 3、1、2、10、9、0、4、6 这8个数据 如果顺序查找，则需要查找8次（位于最后）。<br>二叉树查找树查找：先找到根4，4&lt;6，因此查找4的右子树，找到9；9大于6，因此查找9的左子树；一共只需要查找3次。<br>如下图所示:<br><img src="/images/indexs/sreachTree.png" alt="hash"><br> 缺点：按照二叉查找树的定义，它是可以任意的构造，所以同样的数据。同样查找数据6，需要查找5次。<br><img src="/images/indexs/st2.png" alt="hash"></p>
+<h3 id="平衡二叉树（AVL树）"><a href="#平衡二叉树（AVL树）" class="headerlink" title="平衡二叉树（AVL树）"></a>平衡二叉树（AVL树）</h3><p> 因此为了最大性能地构造一个二叉查找树，需要它是平衡的，即平衡二叉树。<br> <strong>平衡二叉树定义：首先符合二叉查找树的定义，另外任何节点的两个子树高度最大差为1。</strong><br>平衡二叉树的查询速度是很快的，但是有缺点：</p>
+<ol>
+<li>维护树的代价是非常大，在进行插入或更新时，经常会需要多次左旋或右旋来维持平衡。</li>
+<li>数据量多的时候，树会很高，需要多次I/O操作。<br><img src="/images/indexs/avl.png" alt="hash"></li>
+</ol>
+<h3 id="B-树"><a href="#B-树" class="headerlink" title="B+ 树"></a>B+ 树</h3><p>1.非叶子节点不再存储数据，数据只存储在同一层的叶子节点上， 且是<strong>顺序存放</strong> 。<br>2.B+树中根到每一个节点的路径长度一样。<br>3.叶子之间，增加了链表，获取所有节点。</p>
+<p><img src="/images/indexs/B+tree.png" alt="hash"></p>
+<p>优点：</p>
+<ol>
+<li>B+树的高度一般为2-4层，所以查找记录时最多只需要2-4次<strong>磁盘IO</strong>，相对二叉平衡树已经大大降低了。</li>
+<li>范围查找时，能通过叶子节点的指针获取数据。例如查找大于等于3的数据，当在叶子节点中查到3时，通过3的尾指针便能获取所有数据，而不需要再像二叉树一样再获取到3的父节点。</li>
+</ol>
+<h4 id="为什么要减少磁盘IO次数"><a href="#为什么要减少磁盘IO次数" class="headerlink" title="为什么要减少磁盘IO次数"></a>为什么要减少磁盘IO次数</h4><p>众所周知，数据实际是存储在磁盘中的，而磁盘IO的查找速度是要远小于内存速度的，所以减少磁盘IO的次数能很大程度的提高性能。<br><strong>局部性原理？</strong><br>其原理的逻辑是这样的：<br>(1)内存读写块，磁盘读写慢，而且慢很多；<br>(2)<strong>磁盘预读</strong>：磁盘读写并不是按需读取，而是按页预读，一次会读一页的数据，每次加载更多的数据，如果未来要读取的数据就在这一页中，可以避免未来的磁盘IO，提高效率。<em>通常，一页数据是4K。</em><br>(3)<strong>局部性原理</strong>：软件设计要尽量遵循“数据读取集中”与“使用到一个数据，大概率会使用其附近的数据”，这样磁盘预读能充分提高磁盘IO；</p>
+<h3 id="MySQL索引"><a href="#MySQL索引" class="headerlink" title="MySQL索引"></a>MySQL索引</h3><h4 id="聚集索引（Clustered-index-）"><a href="#聚集索引（Clustered-index-）" class="headerlink" title="聚集索引（Clustered index ）"></a>聚集索引（Clustered index ）</h4><ul>
+<li>叶子节点存放了整张表的所有行数据。</li>
+<li>非叶子节点并不存储行数据，是为了能存储更多索引键，从而降低B+树的高度，进而减少IO次数。</li>
+<li>聚集索引的存储在物理上并不是连续的，每个数据页在不同的磁盘块，通过一个双向链表来进行连接。</li>
+</ul>
+<h4 id="非聚集索引（Secondary-indexes）"><a href="#非聚集索引（Secondary-indexes）" class="headerlink" title="非聚集索引（Secondary indexes）"></a>非聚集索引（Secondary indexes）</h4><p>非聚集索引又叫辅助索引，叶子节点并不包含行记录数据，而是存储了聚集索引键。 </p>
+<ul>
+<li>每个表可以有多个辅助索引</li>
+<li>通过辅助索引查数据时，先查找辅助索引获得聚集索引的主键，然后通过主键索引来查找完整的行记录。</li>
+<li>通过非主键索引比主键索引查找速度要慢一倍</li>
+</ul>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>数据库索引用于加速查询</li>
+<li>虽然哈希索引是O(1)，树索引是O(log(n))，但SQL有很多“有序”需求，故数据库使用树型索引</li>
+<li>MySQL InnoDB不支持哈希索引</li>
+<li><strong>数据预读</strong>的思路是：磁盘读写并不是按需读取，而是按页预读，一次会读一页的数据，每次加载更多的数据，以便未来减少磁盘IO</li>
+<li><strong>局部性原理</strong>：软件设计要尽量遵循“数据读取集中”与“使用到一个数据，大概率会使用其附近的数据”，这样磁盘预读能充分提高磁盘IO</li>
+<li>数据库的索引最常用B+树：<ul>
+<li>很适合磁盘存储，能够充分利用局部性原理，磁盘预读；</li>
+<li>很低的树高度，能够存储大量数据；</li>
+<li>(索引本身占用的内存很小；</li>
+<li>能够很好的支持单点查询，范围查询，有序性查询；</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/索引/" rel="tag">#索引</a>
+          
+            <a href="/tags/数据库/" rel="tag">#数据库</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/管理/研发团队之故障定级/" rel="next" title="研发团队之故障定级">
+                <i class="fa fa-chevron-left"></i> 研发团队之故障定级
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="James" />
+          <p class="site-author-name" itemprop="name">James</p>
+          <p class="site-description motion-element" itemprop="description">好记心不如烂笔头</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">40</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">47</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/onelee85" target="_blank" title="Github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Github
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据库为什么要设计索引？"><span class="nav-number">2.</span> <span class="nav-text">数据库为什么要设计索引？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常见索引模型"><span class="nav-number">3.</span> <span class="nav-text">常见索引模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#哈希索引"><span class="nav-number">3.1.</span> <span class="nav-text">哈希索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#B-树索引"><span class="nav-number">3.2.</span> <span class="nav-text">B+树索引</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#二叉树查找树"><span class="nav-number">3.2.1.</span> <span class="nav-text">二叉树查找树</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#平衡二叉树（AVL树）"><span class="nav-number">3.2.2.</span> <span class="nav-text">平衡二叉树（AVL树）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#B-树"><span class="nav-number">3.2.3.</span> <span class="nav-text">B+ 树</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#为什么要减少磁盘IO次数"><span class="nav-number">3.2.3.1.</span> <span class="nav-text">为什么要减少磁盘IO次数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL索引"><span class="nav-number">3.2.4.</span> <span class="nav-text">MySQL索引</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#聚集索引（Clustered-index-）"><span class="nav-number">3.2.4.1.</span> <span class="nav-text">聚集索引（Clustered index ）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#非聚集索引（Secondary-indexes）"><span class="nav-number">3.2.4.2.</span> <span class="nav-text">非聚集索引（Secondary indexes）</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">James</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+  
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>
