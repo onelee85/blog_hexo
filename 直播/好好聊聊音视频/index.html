@@ -1,0 +1,659 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.lug.ustc.edu.cn/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="视频,音频," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="前言五年来一直从事直播行业，经历过了百播大战， 一直也关注斗鱼、熊猫直播等平台从零开始内测到成长为巨头，目睹了一部分企业的最终倒闭。  5G时代即将来临，未来网络带宽和传输延迟都不再是瓶颈，视频、AR、AI和物联网一定会成为主流。 我也想聊聊关于音视频这方面的技术要点，同时好好沉淀下这几年在直播行业所学和所用的知识。">
+<meta name="keywords" content="视频,音频">
+<meta property="og:type" content="article">
+<meta property="og:title" content="好好聊聊音视频-第一弹">
+<meta property="og:url" content="https://onelee85.github.io/直播/好好聊聊音视频/index.html">
+<meta property="og:site_name" content="James&#39;s 烂笔头">
+<meta property="og:description" content="前言五年来一直从事直播行业，经历过了百播大战， 一直也关注斗鱼、熊猫直播等平台从零开始内测到成长为巨头，目睹了一部分企业的最终倒闭。  5G时代即将来临，未来网络带宽和传输延迟都不再是瓶颈，视频、AR、AI和物联网一定会成为主流。 我也想聊聊关于音视频这方面的技术要点，同时好好沉淀下这几年在直播行业所学和所用的知识。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://onelee85.github.io/images/stream/streamcdn.png">
+<meta property="og:image" content="https://onelee85.github.io/images/stream/cdn.png">
+<meta property="og:image" content="https://onelee85.github.io/images/stream/flow.png">
+<meta property="og:updated_time" content="2019-12-05T03:38:53.672Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="好好聊聊音视频-第一弹">
+<meta name="twitter:description" content="前言五年来一直从事直播行业，经历过了百播大战， 一直也关注斗鱼、熊猫直播等平台从零开始内测到成长为巨头，目睹了一部分企业的最终倒闭。  5G时代即将来临，未来网络带宽和传输延迟都不再是瓶颈，视频、AR、AI和物联网一定会成为主流。 我也想聊聊关于音视频这方面的技术要点，同时好好沉淀下这几年在直播行业所学和所用的知识。">
+<meta name="twitter:image" content="https://onelee85.github.io/images/stream/streamcdn.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 3109763,
+      author: 'Charles0429'
+    }
+  };
+</script>
+
+  <title> 好好聊聊音视频-第一弹 | James's 烂笔头 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?6783c3663ad3a4aee432726abc0999c9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">James's 烂笔头</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">好记心不如烂笔头</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                好好聊聊音视频-第一弹
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2019-12-03T10:10:00+08:00" content="2019-12-03">
+              2019-12-03
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/直播/" itemprop="url" rel="index">
+                    <span itemprop="name">直播</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>五年来一直从事直播行业，经历过了<em>百播大战</em>， 一直也关注斗鱼、熊猫直播等平台从零开始内测到成长为巨头，目睹了一部分企业的最终倒闭。  5G时代即将来临，未来网络带宽和传输延迟都不再是瓶颈，视频、AR、AI和物联网一定会成为主流。 我也想聊聊关于音视频这方面的技术要点，同时好好沉淀下这几年在直播行业所学和所用的知识。<br><a id="more"></a></p>
+<h1 id="技术漫谈"><a href="#技术漫谈" class="headerlink" title="技术漫谈"></a>技术漫谈</h1><p> 我们常说到直播技术，最先想到的就是音频技术和视频技术。 其实它们的大体处理流程都是差不多的。一般都分为五大步： 数据采集，编码，传输，解码和渲染。<br><img src="/images/stream/streamcdn.png" alt="hash"></p>
+<h1 id="音视频技术"><a href="#音视频技术" class="headerlink" title="音视频技术"></a>音视频技术</h1><h2 id="什么是视频"><a href="#什么是视频" class="headerlink" title="什么是视频"></a>什么是视频</h2><p> 不知道大家小时候是否玩过一种动画小人书，连续翻动的时候，小人书的画面就会变成一个动画。<br>而视频的原理正是如此，由于人类眼睛的特殊结构，画面快速切换时，画面会有残留，感觉起来就是连贯的动作。所以，<strong>视频就是由一系列图片构成的</strong>。  </p>
+<h3 id="视频帧"><a href="#视频帧" class="headerlink" title="视频帧"></a>视频帧</h3><p>帧，是视频的一个基本概念，表示一张画面，如翻页动画书中的一页，就是一帧。一个视频就是由许许多多帧组成的。 </p>
+<h3 id="帧率"><a href="#帧率" class="headerlink" title="帧率"></a>帧率</h3><p>帧率，即单位时间内帧的数量，单位为：帧/秒 或fps（frames per second）。如动画书中，一秒内包含多少张图片，图片越多，画面越顺滑，过渡越自然。 </p>
+<h3 id="色彩空间"><a href="#色彩空间" class="headerlink" title="色彩空间"></a>色彩空间</h3><p>这里我们只讲常用到的两种色彩空间。</p>
+<ul>
+<li>RGB<br>RGB的颜色模式应该是我们最熟悉的一种，在现在的电子设备中应用广泛。通过R G B三种基础色，可以混合出所有的颜色。</li>
+<li>YUV<br>这里着重讲一下YUV，这种色彩空间并不是我们熟悉的。这是一种亮度与色度分离的色彩格式。<br>早期的电视都是黑白的，即只有亮度值，即Y。有了彩色电视以后，加入了UV两种色度，形成现在的YUV，也叫YCbCr。<br>Y：亮度，就是灰度值。除了表示亮度信号外，还含有较多的绿色通道量。<br>U：蓝色通道与亮度的差值。<br>V：红色通道与亮度的差值。<br><strong>采用YUV有什么优势呢？</strong><blockquote>
+<p>人眼对亮度敏感，对色度不敏感，因此减少部分UV的数据量，人眼却无法感知出来，这样可以通过压缩UV的分辨率，在不影响观感的前提下，减小视频的体积。</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="音频是什么"><a href="#音频是什么" class="headerlink" title="音频是什么"></a>音频是什么</h2><p>音频数据的承载方式最常用的是<strong>脉冲编码调制</strong>，即<strong>PCM</strong>。<br>在自然界中，声音是连续不断的，是一种模拟信号，那怎样才能把声音保存下来呢？那就是把声音数字化，即转换为数字信号。</p>
+<h3 id="采样率和采样位数"><a href="#采样率和采样位数" class="headerlink" title="采样率和采样位数"></a>采样率和采样位数</h3><p>采样率：即采样的频率。<br>上面提到，采样率要大于原声波频率的2倍，人耳能听到的最高频率为20kHz，所以为了满足人耳的听觉要求，采样率至少为40kHz，通常为44.1kHz，更高的通常为48kHz。</p>
+<p>采样位数：涉及到上面提到的振幅量化。波形振幅在模拟信号上也是连续的样本值，而在数字信号中，信号一般是不连续的，所以模拟信号量化以后，只能取一个近似的整数值，为了记录这些振幅值，采样器会采用一个固定的位数来记录这些振幅值，通常有8位、16位、32位。</p>
+<h3 id="声道数"><a href="#声道数" class="headerlink" title="声道数"></a>声道数</h3><p>声道数，是指支持能<strong>不同发声</strong>（注意是不同声音）的音响的个数。<br>单声道：1个声道；双声道：2个声道；立体声道：默认为2个声道；体声道（4声道）：4个声道</p>
+<h3 id="码率"><a href="#码率" class="headerlink" title="码率"></a>码率</h3><p>码率，是指一个数据流中每秒钟能通过的信息量，单位bps（bit per second）<br>码率 = 采样率 <em> 采样位数 </em> 声道数</p>
+<h2 id="编码"><a href="#编码" class="headerlink" title="编码"></a>编码</h2><h3 id="数据编码"><a href="#数据编码" class="headerlink" title="数据编码"></a>数据编码</h3><p>数据采集完成之后，需要对数据进行压缩编码。音视频使用的压缩技术称为有损压缩技术。而像我们平RAR，ZIP工具进行的压缩都是无损压缩。就是说解压后的数据与原始数据一样叫做无损压缩，解压后和原始数据高度接近称为有损压缩，音视频编码属于后者。</p>
+<h3 id="音频编码"><a href="#音频编码" class="headerlink" title="音频编码"></a>音频编码</h3><p>常用的编码格式有speex, AAC, OPUS, G.711等。现在比较常用的是AAC，一是它音质比较好，二是RTMP对AAC支持的比较好。对于视频编码格式有H.264, H.265, VP8, VP9等，目常基本上都是使用H.264。</p>
+<p>衡量有损压缩好坏的指标就是看同等压缩率的情况下，解压后的数据与原始数据之间差别的大小，差别越小证明压缩的算法越优。当然在实时互动直播中，我们为了实时性就需要牺牲一部分质量或者也有可能为了质量而牺牲一些实时性，这需要仔细的权衡。</p>
+<h2 id="传输"><a href="#传输" class="headerlink" title="传输"></a>传输</h2><p>传输涉及到很多端：主播端→服务端→边缘节点→观看端<br>推流端和分发端 理论上需要支持的并发用户数应该都是亿级的，不过毕竟产生内容的推流端在少数，和消费内容端播放端不是一个量级，但是他们对推流稳定性和速度的要求比播放端高很多，这涉及到所有播放端能否看到直播和直播端质量如何。<br>所以自己做传输基本不现实，推荐交给CDN服务商。CDN只提供了带宽和服务器 的传输，发送和接收端的网络连接抖动缓冲还是要自己写的。不想要卡顿， 必然要加大缓冲，加大缓冲会导致延迟高，延迟高影响互动性，要做权衡。</p>
+<p>数据压缩完之后通过网络传输。对于泛娱乐化的直播平台一般都使用RTMP协议进行数据的传输，RTMP是在TCP之上的网络协议。对于实时互动直播则必须使用UDP进行数据传输。 UDP数据的传输速度上比TCP有天然的优势</p>
+<h3 id="协议相关"><a href="#协议相关" class="headerlink" title="协议相关"></a>协议相关</h3><p>RTMP、FLV、HLS 、WebRTC技术<br><strong>RTMP</strong>:  是 Real Time Messaging Protocol（实时消息传输协议）的首字母缩写。该协议基于 TCP，是一个协议族，包括  RTMP 基本协议及 RTMPT/RTMPS/RTMPE 等多种变种。RTMP 是一种设计用来进行实时数据通信的网络协议，主要用来在  Flash/AIR 平台和支持 RTMP 协议的流媒体/交互服务器之间进行音视频和数据通信。支持该协议的软件包括 Adobe Media  Server/Ultrant Media Server/red5 等。<br>RTMP 是目前主流的流媒体传输协议，广泛用于直播领域，可以说市面上绝大多数的直播产品都采用了这个协议。<br><strong>WebRTC</strong>: 名称源自网页即时通信（英语：Web Real-Time Communication）的缩写，是一个支持网页浏览器进行实时语音对话或视频对话的 API </p>
+<h3 id="内容分发网络-CDN"><a href="#内容分发网络-CDN" class="headerlink" title="内容分发网络 CDN"></a>内容分发网络 CDN</h3><p>构建一个全国性的全网覆盖网络，<strong>将视频内容缓存或镜像到这些节点边缘服务器上</strong>，为不同地域的不同用户提供视频内容加速服务。实现就近访问，从而加速访问速度，提升用户的访问体验，并可以<strong>避免源站因访问量过大而造成的服务器负载过量与带宽资源不足等问题，解决网络拥塞，提高用户访问网站的响应速度</strong>，有效保证用户体验。<br><img src="/images/stream/cdn.png" alt="flow"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>从视频、音频、编码和传输几个方面分别介绍了直播相关的知识，对于一个完整覆盖采集，推流，拉流和播放还有很多细节没有提到，可以先看看下面的架构图，未来还有第二第三弹继续介绍音视频直播的其他内容。</p>
+<p><img src="/images/stream/flow.png" alt="flow"></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/视频/" rel="tag">#视频</a>
+          
+            <a href="/tags/音频/" rel="tag">#音频</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/数据库/从面试谈到数据库索引/" rel="next" title="从面试谈到数据库索引">
+                <i class="fa fa-chevron-left"></i> 从面试谈到数据库索引
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="James" />
+          <p class="site-author-name" itemprop="name">James</p>
+          <p class="site-description motion-element" itemprop="description">好记心不如烂笔头</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">41</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">49</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/onelee85" target="_blank" title="Github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Github
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#技术漫谈"><span class="nav-number">2.</span> <span class="nav-text">技术漫谈</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#音视频技术"><span class="nav-number">3.</span> <span class="nav-text">音视频技术</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是视频"><span class="nav-number">3.1.</span> <span class="nav-text">什么是视频</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#视频帧"><span class="nav-number">3.1.1.</span> <span class="nav-text">视频帧</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#帧率"><span class="nav-number">3.1.2.</span> <span class="nav-text">帧率</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#色彩空间"><span class="nav-number">3.1.3.</span> <span class="nav-text">色彩空间</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#音频是什么"><span class="nav-number">3.2.</span> <span class="nav-text">音频是什么</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#采样率和采样位数"><span class="nav-number">3.2.1.</span> <span class="nav-text">采样率和采样位数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#声道数"><span class="nav-number">3.2.2.</span> <span class="nav-text">声道数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#码率"><span class="nav-number">3.2.3.</span> <span class="nav-text">码率</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编码"><span class="nav-number">3.3.</span> <span class="nav-text">编码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据编码"><span class="nav-number">3.3.1.</span> <span class="nav-text">数据编码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#音频编码"><span class="nav-number">3.3.2.</span> <span class="nav-text">音频编码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#传输"><span class="nav-number">3.4.</span> <span class="nav-text">传输</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#协议相关"><span class="nav-number">3.4.1.</span> <span class="nav-text">协议相关</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内容分发网络-CDN"><span class="nav-number">3.4.2.</span> <span class="nav-text">内容分发网络 CDN</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">James</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+  
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>
