@@ -13,13 +13,14 @@ cache:
 
 before_install:
   - npm install -g hexo-cli # 安装 hexo
+  - npm install -unsafe-perm -verbose -g hexo
 
 install:
   - npm install # 安装 package.json 中的插件
 
 script:
   - hexo generate # generate static files
-  - npm install -unsafe-perm -verbose -g hexo
+  
 
 deploy:
   provider: pages
