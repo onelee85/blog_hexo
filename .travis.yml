@@ -19,4 +19,4 @@ install:
   - npm install # 安装 package.json 中的插件
 
 script:
-  - hexo s -g
+  - hexo g -d
