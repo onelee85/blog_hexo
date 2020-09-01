@@ -1,11 +1,23 @@
 sudo: false
 language: node_js
 node_js:
-  - 10 # use nodejs v10 LTS
-cache: npm
+  - 9.11.1 # use nodejs v10 LTS
+
 branches:
   only:
     - master # build master branch only
+cache:
+  directories:
+    - node_modules
+    #- themes 主题没有更改时可以缓存
+
+
+before_install:
+  - npm install -g hexo-cli # 安装 hexo
+
+install:
+  - npm install # 安装 package.json 中的插件
+
 script:
   - hexo generate # generate static files
 deploy:
