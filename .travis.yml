@@ -24,6 +24,7 @@ deploy:
   skip_cleanup: true
   github_token: $GH_TOKEN
   keep_history: true
+  repo: onelee85/onelee85.github.io
   on:
     branch: master
   local-dir: public
