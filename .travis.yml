@@ -1,4 +1,3 @@
-sudo: false
 language: node_js
 node_js:
   - 10 # use nodejs v10 LTS
@@ -19,4 +18,12 @@ install:
   - npm install # 安装 package.json 中的插件
 
 script:
-  - hexo d -g # generate static files
+  - hexo generate # generate static files
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $GH_TOKEN
+  keep-history: true
+  on:
+    branch: master
+  local-dir: public
