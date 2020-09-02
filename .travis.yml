@@ -19,12 +19,4 @@ install:
   - npm install # 安装 package.json 中的插件
 
 script:
-  - hexo generate # generate static files
-
-deploy:
-  provider: pages
-  skip-cleanup: true
-  github-token: $GH_TOKEN
-  keep-history: true
-  on:
-    branch: master
+  - hexo d -g # generate static files
