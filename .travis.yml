@@ -23,7 +23,7 @@ deploy:
   provider: pages
   skip_cleanup: true
   github_token: $GH_TOKEN
-  keep_history: true
+  keep_history: false
   repo: onelee85/onelee85.github.io
   on:
     branch: master
