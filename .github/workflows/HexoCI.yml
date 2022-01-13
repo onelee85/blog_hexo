@@ -29,18 +29,18 @@ jobs:
     
     # 提交到我们的存放静态资源的仓库
     - name: Config Private Key
-        env:
-         PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }} #此处的PRIVATE_KEY 是配置私有库时settings-》secrets的名称
-        run: |
+      env:
+        PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }} #此处的PRIVATE_KEY 是配置私有库时settings-》secrets的名称
+      run: |
          mkdir -p ~/.ssh/
          echo "$PRIVATE_KEY" > ~/.ssh/github_rsa
          chmod 600 ~/.ssh/github_rsa
          ssh-keyscan github.com >> ~/.ssh/known_hosts
-   - name: Config Git
-        run: |
+    - name: Config Git
+      run: |
          git config --global user.name 'onelee85'
          git config --global user.email 'onelee85@gmail.com'
-   - name: Deploy
-        run: |
+    - name: Deploy
+      run: |
          hexo clean & hexo g & hexo d
 

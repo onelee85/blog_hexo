@@ -77,4 +77,4 @@ theme: next
 deploy:
   type: git
   repo: git@github.com:onelee85/onelee85.github.io.git
-  branch: master
+  branch: gh-pages
