@@ -28,11 +28,19 @@ jobs:
         hexo g
     
     # 提交到我们的存放静态资源的仓库
-    - name: Build and Deploy
-      uses: y4code/hexo-deploy-action@master
-      env:
-        PERSONAL_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-        PUBLISH_REPOSITORY: onelee85/onelee85.github.io.git # The repository the action should deploy to.
-        BRANCH: gh-pages  # The branch the action should deploy to.
-        PUBLISH_DIR: .
+    - name: Config Private Key
+        env:
+         PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }} #此处的PRIVATE_KEY 是配置私有库时settings-》secrets的名称
+        run: |
+         mkdir -p ~/.ssh/
+         echo "$PRIVATE_KEY" > ~/.ssh/github_rsa
+         chmod 600 ~/.ssh/github_rsa
+         ssh-keyscan github.com >> ~/.ssh/known_hosts
+   - name: Config Git
+        run: |
+         git config --global user.name 'onelee85'
+         git config --global user.email 'onelee85@gmail.com'
+   - name: Deploy
+        run: |
+         hexo clean & hexo g & hexo d
 
