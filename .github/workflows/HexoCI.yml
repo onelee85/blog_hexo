@@ -1,0 +1,38 @@
+name: GitHub Actions Build and Deploy
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    # 拉取代码
+    - name: 1. git checkout...
+      uses: actions/checkout@v2
+
+    - name: 2. setup nodejs...
+      uses: actions/setup-node@v2
+      with:
+          node-version: '>=12.x'
+
+    - name: 3. install hexo...
+      run: |
+        npm install hexo-cli -g
+        npm install
+
+    - name: 4. hexo generate public files...
+      run: |
+        hexo clean
+        hexo g
+    
+    # 提交到我们的存放静态资源的仓库
+    - name: Build and Deploy
+      uses: y4code/hexo-deploy-action@master
+      env:
+        PERSONAL_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        PUBLISH_REPOSITORY: onelee85/onelee85.github.io.git # The repository the action should deploy to.
+        BRANCH: gh-pages  # The branch the action should deploy to.
+        PUBLISH_DIR: .
+
