@@ -15,7 +15,7 @@ jobs:
     - name: 2. setup nodejs...
       uses: actions/setup-node@v2
       with:
-          node-version: '>=12.x'
+          node-version: '14.18.1'
 
     - name: 3. install hexo...
       run: |
@@ -28,7 +28,7 @@ jobs:
         hexo g
     
     # 提交到我们的存放静态资源的仓库
-    - name: Config Private Key
+    - name: 5. Config Private Key
       env:
         PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }} #此处的PRIVATE_KEY 是配置私有库时settings-》secrets的名称
       run: |
@@ -36,11 +36,11 @@ jobs:
          echo "$PRIVATE_KEY" > ~/.ssh/github_rsa
          chmod 600 ~/.ssh/github_rsa
          ssh-keyscan github.com >> ~/.ssh/known_hosts
-    - name: Config Git
+    - name: 6. Config Git
       run: |
          git config --global user.name 'onelee85'
          git config --global user.email 'onelee85@gmail.com'
-    - name: Deploy
+    - name: 7. Deploy
       run: |
-         hexo clean & hexo g & hexo d
+         exo d
 
