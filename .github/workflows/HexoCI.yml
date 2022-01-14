@@ -42,5 +42,5 @@ jobs:
          git config --global user.email 'onelee85@gmail.com'
     - name: 7. Deploy
       run: |
-         exo d
+         hexo d
 
