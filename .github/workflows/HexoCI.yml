@@ -19,8 +19,8 @@ jobs:
 
     - name: 3. install hexo...
       run: |
-        npm install hexo-cli -g
-	npm install hexo-deployer-git –save
+        npm install hexo-cli-g 
+        npm install hexo-deployer-git –save
 
     - name: 4. hexo generate public files...
       run: |
@@ -42,6 +42,6 @@ jobs:
          git config --global user.email 'onelee85@gmail.com'
     - name: 7. Deploy
       run: |
-	rm -rf .deploy_git
+        rm -rf .deploy_git
         hexo d
 
